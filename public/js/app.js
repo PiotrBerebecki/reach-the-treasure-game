@@ -39,6 +39,19 @@ const enemies = [
 const enemyColor = 'tomato';
 
 
+// define player
+const player = {
+  x: 10,
+  y: canvasHeight / 2 - 10,
+  w: 20,
+  h: 20,
+  speed: 2,
+  isMoving: false,
+};
+
+const playerColor = 'blue';
+
+
 // utilities
 const clearCanvas = () => {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
@@ -46,7 +59,7 @@ const clearCanvas = () => {
 
 
 const drawEnemy = (enemy) => {
-  let { x, y, w, h } = enemy;
+  const { x, y, w, h } = enemy;
   ctx.fillStyle = enemyColor;
   ctx.fillRect(x - (w/2), y, w, h);
 };
@@ -55,13 +68,27 @@ const drawEnemy = (enemy) => {
 const updateEnemy = (enemy) => {
   const { y, h, speed } = enemy;
   
-  if (y >= canvasHeight-h) {
+  if (y >= canvasHeight - h) {
     enemy.speed = -speed;
   } else if (y <= 0) {
     enemy.speed = -speed;
   }
-  
+   
   enemy.y += enemy.speed;  
+};
+
+
+// drawPlayer
+const drawPlayer = () => {
+  const { x, y, w, h } = player;
+  ctx.fillStyle = playerColor;
+  ctx.fillRect(x, y, w, h);
+};
+
+const updatePlayer = () => {
+  if (player.isMoving) {
+    player.x += player.speed;
+  }
 };
 
 
@@ -72,9 +99,12 @@ const playGame = () => {
   clearCanvas();
   
   enemies.forEach(enemy => {
-    updateEnemy(enemy);
     drawEnemy(enemy);
+    updateEnemy(enemy);
   });
+  
+  drawPlayer();
+  updatePlayer();
   
   requestId = window.requestAnimationFrame(playGame);
 };
