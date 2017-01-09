@@ -40,21 +40,23 @@ const enemyColor = 'tomato';
 
 
 // define player
+const playerHeight = 20;
+const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
+
 const player = {
   x: 10,
-  y: 100,
+  y: playerInitialYPosition,
   w: 20,
-  h: 20,
+  h: playerHeight,
   speed: 2,
   isMoving: false,
   movingDirection: null,
   isLeftArrowDown: false,
   isUpArrowDown: false,
   isRightArrowDown: false,
-  isDownArrowDown: false
+  isDownArrowDown: false,
+  color: 'blue'
 };
-
-const playerColor = 'blue';
 
 
 // utilities
@@ -63,6 +65,7 @@ const clearCanvas = () => {
 };
 
 
+// enemy movement
 const drawEnemy = (enemy) => {
   const { x, y, w, h } = enemy;
   ctx.fillStyle = enemyColor;
@@ -78,15 +81,15 @@ const updateEnemy = (enemy) => {
   } else if (y <= 0) {
     enemy.speed = -speed;
   }
-   
+  
   enemy.y += enemy.speed;  
 };
 
 
- 
+// player movement
 const drawPlayer = () => {
   const { x, y, w, h } = player;
-  ctx.fillStyle = playerColor;
+  ctx.fillStyle = player.color;
   ctx.fillRect(x, y, w, h);
 };
 
