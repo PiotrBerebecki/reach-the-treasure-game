@@ -42,11 +42,12 @@ const enemyColor = 'tomato';
 // define player
 const player = {
   x: 10,
-  y: canvasHeight / 2 - 10,
+  y: 100,
   w: 20,
   h: 20,
   speed: 2,
   isMoving: false,
+  movingDirection: null
 };
 
 const playerColor = 'blue';
@@ -87,9 +88,51 @@ const drawPlayer = () => {
 
 const updatePlayer = () => {
   if (player.isMoving) {
-    player.x += player.speed;
+    switch(player.movingDirection) {
+      case 'left':
+        player.x -= player.speed;
+        if (player.x <= 0) { player.x = 0; }
+        break;
+      case 'up':
+        player.y -= player.speed;
+        if (player.y <= 0) { player.y = 0; }
+        break;
+      case 'right':
+        player.x += player.speed;
+        if (player.x >= canvasWidth - player.w) { player.x = canvasWidth - player.w; }
+        break;
+      case 'down':
+        player.y += player.speed;
+        if (player.y >= canvasHeight - player.h) { player.y = canvasHeight - player.h; }
+        break;
+    }
   }
 };
+
+
+// player move
+window.addEventListener('keydown', function(e) {
+  player.isMoving = true;
+  
+  switch(e.keyCode) {
+    case 37:
+      player.movingDirection = 'left';
+      break;
+    case 38:
+      player.movingDirection = 'up';
+      break;
+    case 39:
+      player.movingDirection = 'right';
+      break;
+    case 40:
+      player.movingDirection = 'down';
+      break;
+  }
+});
+
+window.addEventListener('keyup', function(e) {
+  player.isMoving = false;
+});
 
 
 // play game & pause logic
