@@ -39,44 +39,44 @@ const enemies = [
 const enemyColor = 'tomato';
 
 
+// utilities
 const clearCanvas = () => {
   ctx.clearRect(0, 0, canvasWidth, canvasHeight);
 };
 
 
-const drawEnemies = () => {
-  enemies.forEach(enemy => {
-    let { x, y, w, h } = enemy;
-    ctx.fillStyle = enemyColor;
-    ctx.fillRect(x - (w/2), y, w, h);
-  });
+const drawEnemy = (enemy) => {
+  let { x, y, w, h } = enemy;
+  ctx.fillStyle = enemyColor;
+  ctx.fillRect(x - (w/2), y, w, h);
 };
 
 
-const updateEnemies = () => {
-  enemies.forEach(enemy => {
-    const { y, speed } = enemy;
-    
-    if (y >= 100) {
-      enemy.speed = -speed;
-    } else if (y <= 0) {
-      enemy.speed = -speed;
-    }
-    
-    enemy.y = y + enemy.speed;  
-  });
+const updateEnemy = (enemy) => {
+  const { y, speed } = enemy;
+  
+  if (y >= 100) {
+    enemy.speed = -speed;
+  } else if (y <= 0) {
+    enemy.speed = -speed;
+  }
+  
+  enemy.y = y + enemy.speed;  
 };
 
 
-
-// start & pause logic
+// play game & pause logic
 let requestId;
 
-const start = () => {
+const playGame = () => {
   clearCanvas();
-  updateEnemies();
-  drawEnemies();
-  requestId = window.requestAnimationFrame(start);
+  
+  enemies.forEach(enemy => {
+    updateEnemy(enemy);
+    drawEnemy(enemy);
+  });
+  
+  requestId = window.requestAnimationFrame(playGame);
 };
 
 
@@ -84,7 +84,7 @@ let isPaused = true;
 
 const pauseGame = () => {
   if (isPaused) {
-    start();
+    playGame();
     pauseButton.textContent = 'Pause';
   } else {
     window.cancelAnimationFrame(requestId);
