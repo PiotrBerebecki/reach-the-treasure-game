@@ -119,8 +119,9 @@ const updatePlayer = () => {
 
 // move and stop player logic
 const movePlayer = e => {
+  e.preventDefault();
   player.isMoving = true;
-  
+ 
   switch(e.keyCode) {
     case 37:
       player.movingDirection = 'left';
