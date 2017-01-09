@@ -1,5 +1,6 @@
 html {
   box-sizing: border-box;
+  height: 100%;
 }
 
 *, *:before, *:after {
@@ -9,10 +10,24 @@ html {
 }
 
 body {
+  display: flex;
+  align-items: center;
+  height: 100%;
   font-family: sans-serif;
 }
 
+.app {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-left: auto;
+  margin-right: auto;
+  width: 50%;
+  /*border: solid 2px blue;*/
+}
+
 #canvas {
+  width: 70%;
   border: solid 1px black;
 }
 

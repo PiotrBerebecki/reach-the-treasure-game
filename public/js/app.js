@@ -53,15 +53,15 @@ const drawEnemy = (enemy) => {
 
 
 const updateEnemy = (enemy) => {
-  const { y, speed } = enemy;
+  const { y, h, speed } = enemy;
   
-  if (y >= 100) {
+  if (y >= canvasHeight-h) {
     enemy.speed = -speed;
   } else if (y <= 0) {
     enemy.speed = -speed;
   }
   
-  enemy.y = y + enemy.speed;  
+  enemy.y += enemy.speed;  
 };
 
 
