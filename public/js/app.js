@@ -83,7 +83,7 @@ const updateEnemy = (enemy) => {
 };
 
 
-// drawPlayer
+ 
 const drawPlayer = () => {
   const { x, y, w, h } = player;
   ctx.fillStyle = playerColor;
@@ -114,8 +114,8 @@ const updatePlayer = () => {
 };
 
 
-// player move
-window.addEventListener('keydown', function(e) {
+// move and stop player logic
+const movePlayer = e => {
   player.isMoving = true;
   
   switch(e.keyCode) {
@@ -136,9 +136,9 @@ window.addEventListener('keydown', function(e) {
       player.isDownArrowDown = true;
       break;
   }
-});
+};
 
-window.addEventListener('keyup', function(e) {
+const stopPlayer = e => {
   switch(e.keyCode) {
     case 37:
       player.isLeftArrowDown = false;
@@ -154,6 +154,8 @@ window.addEventListener('keyup', function(e) {
       break;
   }
   
+  // continue movement when one key is released 
+  // while another is still down
   if (player.isLeftArrowDown  ||
       player.isUpArrowDown    ||
       player.isRightArrowDown ||
@@ -162,7 +164,10 @@ window.addEventListener('keyup', function(e) {
   } else {
     player.isMoving = false;
   }
-});
+};
+
+window.addEventListener('keydown', movePlayer);
+window.addEventListener('keyup', stopPlayer);
 
 
 // play game & pause logic
