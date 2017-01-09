@@ -47,7 +47,11 @@ const player = {
   h: 20,
   speed: 2,
   isMoving: false,
-  movingDirection: null
+  movingDirection: null,
+  isLeftArrowDown: false,
+  isUpArrowDown: false,
+  isRightArrowDown: false,
+  isDownArrowDown: false
 };
 
 const playerColor = 'blue';
@@ -117,21 +121,47 @@ window.addEventListener('keydown', function(e) {
   switch(e.keyCode) {
     case 37:
       player.movingDirection = 'left';
+      player.isLeftArrowDown = true;
       break;
     case 38:
       player.movingDirection = 'up';
+      player.isUpArrowDown = true;
       break;
     case 39:
       player.movingDirection = 'right';
+      player.isRightArrowDown = true;
       break;
     case 40:
       player.movingDirection = 'down';
+      player.isDownArrowDown = true;
       break;
   }
 });
 
 window.addEventListener('keyup', function(e) {
-  player.isMoving = false;
+  switch(e.keyCode) {
+    case 37:
+      player.isLeftArrowDown = false;
+      break;
+    case 38:
+      player.isUpArrowDown = false;
+      break;
+    case 39:
+      player.isRightArrowDown = false;
+      break;
+    case 40:
+      player.isDownArrowDown = false;
+      break;
+  }
+  
+  if (player.isLeftArrowDown  ||
+      player.isUpArrowDown    ||
+      player.isRightArrowDown ||
+      player.isDownArrowDown) {
+    return;
+  } else {
+    player.isMoving = false;
+  }
 });
 
 
