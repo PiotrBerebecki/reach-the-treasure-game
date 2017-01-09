@@ -174,6 +174,26 @@ window.addEventListener('keydown', movePlayer);
 window.addEventListener('keyup', stopPlayer);
 
 
+const touchStart = {
+  x: null,
+  y: null
+};
+
+
+
+
+
+document.addEventListener('touchstart', e => {
+  touchStart.x = e.touches[0].clientX;
+  touchStart.y = e.touches[0].clientY;
+  console.log('touchstart', touchStart);
+});
+
+
+
+
+
+
 // play game & pause logic
 let requestId;
 
