@@ -200,9 +200,15 @@ const processTouchMove = e => {
   
   [touchDirectionStart.x, touchDirectionStart.y] = [touchDirectionMove.x, touchDirectionMove.y];
   
-  if (changeX === changeY) { return; }
+  const changeXAbs = Math.abs(changeX);
+  const changeYAbs = Math.abs(changeY);
   
-  const isMoveHorizontal = Math.abs(changeX) > Math.abs(changeY);
+  // ignore minor changes in move direction
+  if (changeXAbs - changeYAbs < 1) {
+    return;
+  }
+  
+  const isMoveHorizontal = changeXAbs > changeYAbs;
   let isMoveRight, isMoveLeft, isMoveDown, isMoveUp;
   
   if (isMoveHorizontal) {
@@ -213,7 +219,7 @@ const processTouchMove = e => {
     isMoveUp = !isMoveDown;
   }
   
-  // console.log(changeX, changeY);
+  console.log(Math.abs(changeX), Math.abs(changeY));
   
   
   
