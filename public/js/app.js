@@ -295,3 +295,9 @@ const pauseGame = () => {
 
 const pauseButton = document.querySelector('button');
 pauseButton.addEventListener('click', pauseGame);
+
+
+// show deployment time
+const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+const titleEl = document.querySelector('h3');
+titleEl.textContent = `${titleEl.textContent} - ${now}`;
