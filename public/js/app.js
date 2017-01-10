@@ -193,6 +193,7 @@ const processTouchStart = e => {
 };
 
 const processTouchMove = e => {
+  e.preventDefault();
   [touchDirectionMove.x, touchDirectionMove.y] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
   
   const changeX = touchDirectionMove.x - touchDirectionStart.x;
@@ -203,8 +204,8 @@ const processTouchMove = e => {
   const changeXAbs = Math.abs(changeX);
   const changeYAbs = Math.abs(changeY);
   
-  // ignore minor changes in move direction
-  if (changeXAbs - changeYAbs < 1) {
+  // ignore ambiguous move
+  if (changeXAbs === changeYAbs) {
     return;
   }
   
@@ -212,17 +213,19 @@ const processTouchMove = e => {
   let isMoveRight, isMoveLeft, isMoveDown, isMoveUp;
   
   if (isMoveHorizontal) {
+    // ignore minor direction changes
+    if (changeXAbs < 1) { return; }
     isMoveRight = changeX > 0;
     isMoveLeft = !isMoveRight;
   } else {
+    // ignore minor direction changes
+    if (changeYAbs < 1) { return; }
     isMoveDown = changeY > 0;
     isMoveUp = !isMoveDown;
   }
   
-  console.log(Math.abs(changeX), Math.abs(changeY));
-  
-  
-  
+  // console.log(changeXAbs, changeYAbs);
+
   player.isMoving = true;
   player.movingDirection = 'left';
     
