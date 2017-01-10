@@ -27,6 +27,12 @@ body {
   /*border: solid 2px blue;*/
 }
 
+@media screen and (min-width: 769px) {
+  .app {
+    width: 400px;
+  }
+}
+
 #canvas {
   width: 100%;
   border: solid 10px black;

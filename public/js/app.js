@@ -6,7 +6,7 @@ const now = new Date();
 const nowTime = now.toLocaleTimeString('en-GB', { hour12: false });
 const nowDate = now.toLocaleDateString();
 
-const titleEl = document.querySelector('h3');
+const titleEl = document.querySelector('h4');
 titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
