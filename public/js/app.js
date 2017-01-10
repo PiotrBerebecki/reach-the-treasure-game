@@ -12,33 +12,35 @@ const canvasHeight = canvas.height;
 
 
 // define enemies
+const enemyWidth = 20;
+
 let enemies = [
   {
-    x: 100,
+    x: 100 - enemyWidth/2,
     y: 10,
-    w: 20,
+    w: enemyWidth,
     h: 20,
     speed: 2,
   },
-  {
-    x: 200,
-    y: 10,
-    w: 20,
-    h: 20,
-    speed: 3,
-  },
-  {
-    x: 300,
-    y: 10,
-    w: 20,
-    h: 20,
-    speed: 4,
-  }
+  // {
+  //   x: 200 - enemyWidth/2,
+  //   y: 10,
+  //   w: enemyWidth,
+  //   h: 20,
+  //   speed: 3,
+  // },
+  // {
+  //   x: 300 - enemyWidth/2,
+  //   y: 10,
+  //   w: enemyWidth,
+  //   h: 20,
+  //   speed: 4,
+  // }
 ];
 
 const enemyColor = 'tomato';
 
-const enemiesDeepCopy = JSON.parse(JSON.stringify(enemies));
+const enemiesDeepCopy = JSON.stringify(enemies);
 
 
 // define player
@@ -60,7 +62,7 @@ let player = {
   color: 'blue'
 };
 
-const playerDeepCopy = JSON.parse(JSON.stringify(player));
+const playerDeepCopy = JSON.stringify(player);
 
 
 // utilities
@@ -73,11 +75,12 @@ const clearCanvas = () => {
 const drawEnemy = (enemy) => {
   const { x, y, w, h } = enemy;
   ctx.fillStyle = enemyColor;
-  ctx.fillRect(x - (w/2), y, w, h);
+  ctx.fillRect(x, y, w, h);
 };
 
 
 const updateEnemy = (enemy) => {
+  // console.log(enemy.x);
   const { y, h, speed } = enemy;
   
   if (y >= canvasHeight - h) {
@@ -262,6 +265,11 @@ document.addEventListener('touchend', () => {
 });
 
 
+const checkCollision = (player, enemy) => {
+  const closeOnWidth = Math.abs(player.x - enemy.x) < Math.max(player.w, enemy.w);
+  
+  console.log(closeOnWidth);
+};
 
 
 // play game & pause logic
@@ -270,13 +278,14 @@ let requestId;
 const playGame = () => {
   clearCanvas();
   
+  drawPlayer();
+  updatePlayer();
+  
   enemies.forEach(enemy => {
     drawEnemy(enemy);
     updateEnemy(enemy);
+    checkCollision(player, enemy);
   });
-  
-  drawPlayer();
-  updatePlayer();
   
   requestId = window.requestAnimationFrame(playGame);
 };
@@ -289,6 +298,7 @@ let isGamePaused = false;
 
 const startGame = () => {
   isGameLive = !isGameLive;
+  // console.log(isGameLive);
   
   if (isGameLive) {
     playGame();
@@ -297,8 +307,8 @@ const startGame = () => {
     requestId = undefined;
     clearCanvas();
     isGamePaused = false;
-    enemies = JSON.parse(JSON.stringify(enemiesDeepCopy));
-    player = JSON.parse(JSON.stringify(playerDeepCopy));
+    enemies = JSON.parse(enemiesDeepCopy);
+    player = JSON.parse(playerDeepCopy);
   }  
 };
 
