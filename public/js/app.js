@@ -1,6 +1,12 @@
 console.clear();
 
 
+// show deployment time
+const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+const titleEl = document.querySelector('h3');
+titleEl.textContent = `${titleEl.textContent} - ${now}`;
+
+
 // canvas and context
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -9,38 +15,6 @@ const ctx = canvas.getContext('2d');
 // canvas dimensions
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-
-
-// define enemies
-const enemyWidth = 60;
-
-let enemies = [
-  {
-    x: 100 - enemyWidth/2,
-    y: 10,
-    w: enemyWidth,
-    h: 20,
-    speed: 2,
-  },
-  {
-    x: 200 - enemyWidth/2,
-    y: 10,
-    w: enemyWidth,
-    h: 20,
-    speed: 3,
-  },
-  {
-    x: 300 - enemyWidth/2,
-    y: 10,
-    w: enemyWidth,
-    h: 20,
-    speed: 4,
-  }
-];
-
-const enemyColor = 'tomato';
-
-const enemiesDeepCopy = JSON.stringify(enemies);
 
 
 // define player
@@ -64,6 +38,60 @@ let player = {
 
 const playerDeepCopy = JSON.stringify(player);
 
+
+// define enemies
+const enemyWidth = 60;
+
+let enemies = [
+  {
+    x: 100 - enemyWidth/2,
+    y: 10,
+    w: enemyWidth,
+    h: 20,
+    speed: 2,
+  },
+  // {
+  //   x: 200 - enemyWidth/2,
+  //   y: 10,
+  //   w: enemyWidth,
+  //   h: 20,
+  //   speed: 3,
+  // },
+  // {
+  //   x: 300 - enemyWidth/2,
+  //   y: 10,
+  //   w: enemyWidth,
+  //   h: 20,
+  //   speed: 4,
+  // }
+];
+
+const enemyColor = 'tomato';
+
+const enemiesDeepCopy = JSON.stringify(enemies);
+
+
+// define goal
+
+const goalHeight = 20;
+const goalWidth = 20;
+
+const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
+
+const goal = {
+  x: canvasWidth - goalWidth * 2,
+  y: goalInitialYPosition,
+  w: 20,
+  h: 20
+};
+
+const goalColor = 'green';
+
+const drawGoal = () => {
+  const { x, y, w, h } = goal;
+  ctx.fillStyle = goalColor;
+  ctx.fillRect(x, y, w, h);
+};
 
 // enemy movement
 const drawEnemy = (enemy) => {
@@ -119,11 +147,11 @@ const updatePlayer = () => {
 
 
 // detect collision between player and enemy
-const checkCollision = (player, enemy) => {
-  const isCollision = player.x + player.w >= enemy.x &&
-                      enemy.x + enemy.w >= player.x &&
-                      player.y + player.h >= enemy.y &&
-                      enemy.y + enemy.h >= player.y;
+const checkCollision = (player, rect) => {
+  const isCollision = player.x + player.w >= rect.x &&
+                      rect.x + rect.w >= player.x &&
+                      player.y + player.h >= rect.y &&
+                      rect.y + rect.h >= player.y;
   return isCollision;
 };
 
@@ -289,11 +317,19 @@ const playGame = () => {
   enemies.forEach(enemy => {
     drawEnemy(enemy);
     updateEnemy(enemy);
+    
     if (checkCollision(player, enemy)) {
       console.log('collision');
       cancelAnimation();
     }
   });
+  
+  drawGoal();
+  
+  if (checkCollision(player, goal)) {
+    console.log('you won');
+    cancelAnimation();
+  }
   
   // break up draw and update player
   // to better show the alignment of collision
@@ -340,9 +376,3 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
-
-
-// show deployment time
-const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
-const titleEl = document.querySelector('h3');
-titleEl.textContent = `${titleEl.textContent} - ${now}`;
