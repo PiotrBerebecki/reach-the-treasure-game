@@ -174,21 +174,79 @@ window.addEventListener('keydown', movePlayer);
 window.addEventListener('keyup', stopPlayer);
 
 
-const touchStart = {
+
+
+
+// player movement on touch devices
+const touchDirectionStart = {
   x: null,
   y: null
 };
 
+const touchDirectionMove = {
+  x: null,
+  y: null
+};
 
+const processTouchStart = e => {
+  [touchDirectionStart.x, touchDirectionStart.y] = [e.touches[0].clientX, e.touches[0].clientY];
+};
 
+const processTouchMove = e => {
+  [touchDirectionMove.x, touchDirectionMove.y] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
+  
+  const changeX = touchDirectionMove.x - touchDirectionStart.x;
+  const changeY = touchDirectionMove.y - touchDirectionStart.y;
+  
+  [touchDirectionStart.x, touchDirectionStart.y] = [touchDirectionMove.x, touchDirectionMove.y];
+  
+  if (changeX === changeY) { return; }
+  
+  const isMoveHorizontal = Math.abs(changeX) > Math.abs(changeY);
+  let isMoveRight, isMoveLeft, isMoveDown, isMoveUp;
+  
+  if (isMoveHorizontal) {
+    isMoveRight = changeX > 0;
+    isMoveLeft = !isMoveRight;
+  } else {
+    isMoveDown = changeY > 0;
+    isMoveUp = !isMoveDown;
+  }
+  
+  // console.log(changeX, changeY);
+  
+  
+  
+  player.isMoving = true;
+  player.movingDirection = 'left';
+    
+  switch (true) {
+    case isMoveRight:
+      console.log('right');
+      player.movingDirection = 'right';
+      break;
+    case isMoveLeft:
+      console.log('left');
+      player.movingDirection = 'left';
+      break;
+    case isMoveDown:
+      console.log('down');
+      player.movingDirection = 'down';
+      break;
+    case isMoveUp:
+      console.log('up');
+      player.movingDirection = 'up';
+      break;
+    default: 
+      console.log('unknown direction');
+  }
+};
 
-
-document.addEventListener('touchstart', e => {
-  touchStart.x = e.touches[0].clientX;
-  touchStart.y = e.touches[0].clientY;
-  console.log('touchstart', touchStart);
+document.addEventListener('touchstart', processTouchStart);
+document.addEventListener('touchmove', processTouchMove);
+document.addEventListener('touchend', () => {
+  player.isMoving = false;
 });
-
 
 
 
