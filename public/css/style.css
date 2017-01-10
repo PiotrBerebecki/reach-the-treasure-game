@@ -29,7 +29,7 @@ body {
 
 #canvas {
   width: 100%;
-  border: solid 1px black;
+  border: solid 10px black;
 }
 
 button {

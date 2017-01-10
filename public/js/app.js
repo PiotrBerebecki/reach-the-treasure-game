@@ -12,7 +12,7 @@ const canvasHeight = canvas.height;
 
 
 // define enemies
-const enemyWidth = 20;
+const enemyWidth = 60;
 
 let enemies = [
   {
@@ -22,20 +22,20 @@ let enemies = [
     h: 20,
     speed: 2,
   },
-  // {
-  //   x: 200 - enemyWidth/2,
-  //   y: 10,
-  //   w: enemyWidth,
-  //   h: 20,
-  //   speed: 3,
-  // },
-  // {
-  //   x: 300 - enemyWidth/2,
-  //   y: 10,
-  //   w: enemyWidth,
-  //   h: 20,
-  //   speed: 4,
-  // }
+  {
+    x: 200 - enemyWidth/2,
+    y: 10,
+    w: enemyWidth,
+    h: 20,
+    speed: 3,
+  },
+  {
+    x: 300 - enemyWidth/2,
+    y: 10,
+    w: enemyWidth,
+    h: 20,
+    speed: 4,
+  }
 ];
 
 const enemyColor = 'tomato';
@@ -48,7 +48,7 @@ const playerHeight = 20;
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
 let player = {
-  x: 10,
+  x: 40,
   y: playerInitialYPosition,
   w: 20,
   h: playerHeight,
@@ -63,12 +63,6 @@ let player = {
 };
 
 const playerDeepCopy = JSON.stringify(player);
-
-
-// utilities
-const clearCanvas = () => {
-  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
-};
 
 
 // enemy movement
@@ -124,9 +118,19 @@ const updatePlayer = () => {
 };
 
 
-// move and stop player logic
+// detect collision between player and enemy
+const checkCollision = (player, enemy) => {
+  const isCollision = player.x + player.w >= enemy.x &&
+                      enemy.x + enemy.w >= player.x &&
+                      player.y + player.h >= enemy.y &&
+                      enemy.y + enemy.h >= player.y;
+  return isCollision;
+};
+
+
+// control with keyboard
 const movePlayer = e => {
-  e.preventDefault();
+  // e.preventDefault();
   player.isMoving = true;
  
   switch(e.keyCode) {
@@ -182,9 +186,7 @@ window.addEventListener('keyup', stopPlayer);
 
 
 
-
-
-// player movement on touch devices
+// control with touch
 const touchDirectionStart = {
   x: null,
   y: null
@@ -265,29 +267,37 @@ document.addEventListener('touchend', () => {
 });
 
 
-const checkCollision = (player, enemy) => {
-  const closeOnWidth = Math.abs(player.x - enemy.x) < Math.max(player.w, enemy.w);
-  
-  console.log(closeOnWidth);
-};
-
-
 // play game & pause logic
 let requestId;
+
+const clearCanvas = () => {
+  ctx.clearRect(0, 0, canvasWidth, canvasHeight);
+};
+
+const cancelAnimation = () => {
+  window.cancelAnimationFrame(requestId);
+  requestId = undefined;
+};
 
 const playGame = () => {
   clearCanvas();
   
   drawPlayer();
-  updatePlayer();
   
+  requestId = window.requestAnimationFrame(playGame);
+
   enemies.forEach(enemy => {
     drawEnemy(enemy);
     updateEnemy(enemy);
-    checkCollision(player, enemy);
+    if (checkCollision(player, enemy)) {
+      console.log('collision');
+      cancelAnimation();
+    }
   });
   
-  requestId = window.requestAnimationFrame(playGame);
+  // break up draw and update player
+  // to better show the alignment of collision
+  updatePlayer();
 };
 
 
@@ -303,8 +313,7 @@ const startGame = () => {
   if (isGameLive) {
     playGame();
   } else {
-    window.cancelAnimationFrame(requestId);
-    requestId = undefined;
+    cancelAnimation();
     clearCanvas();
     isGamePaused = false;
     enemies = JSON.parse(enemiesDeepCopy);
