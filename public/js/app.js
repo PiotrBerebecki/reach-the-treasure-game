@@ -12,7 +12,7 @@ const canvasHeight = canvas.height;
 
 
 // define enemies
-const enemies = [
+let enemies = [
   {
     x: 100,
     y: 10,
@@ -38,12 +38,14 @@ const enemies = [
 
 const enemyColor = 'tomato';
 
+const enemiesDeepCopy = JSON.parse(JSON.stringify(enemies));
+
 
 // define player
 const playerHeight = 20;
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
-const player = {
+let player = {
   x: 10,
   y: playerInitialYPosition,
   w: 20,
@@ -57,6 +59,8 @@ const player = {
   isDownArrowDown: false,
   color: 'blue'
 };
+
+const playerDeepCopy = JSON.parse(JSON.stringify(player));
 
 
 // utilities
@@ -260,7 +264,6 @@ document.addEventListener('touchend', () => {
 
 
 
-
 // play game & pause logic
 let requestId;
 
@@ -279,21 +282,44 @@ const playGame = () => {
 };
 
 
-let isPaused = true;
+// track game state
+let isGameLive = false;
+let isGamePaused = false;
 
-const pauseGame = () => {
-  if (isPaused) {
+
+const startGame = () => {
+  isGameLive = !isGameLive;
+  
+  if (isGameLive) {
     playGame();
-    pauseButton.textContent = 'Pause';
   } else {
     window.cancelAnimationFrame(requestId);
     requestId = undefined;
-    pauseButton.textContent = 'Start';
-  }
-  isPaused = !isPaused;
+    clearCanvas();
+    isGamePaused = false;
+    enemies = JSON.parse(JSON.stringify(enemiesDeepCopy));
+    player = JSON.parse(JSON.stringify(playerDeepCopy));
+  }  
 };
 
-const pauseButton = document.querySelector('button');
+
+const pauseGame = () => {
+  if (!isGameLive) { return; }
+    
+  isGamePaused = !isGamePaused;
+  
+  if (isGamePaused) {
+    window.cancelAnimationFrame(requestId);
+    requestId = undefined;
+  } else {
+    playGame();
+  }
+};
+
+const startButton = document.getElementById('start-button');
+const pauseButton = document.getElementById('pause-button');
+
+startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
 
 
