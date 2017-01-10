@@ -2,9 +2,12 @@ console.clear();
 
 
 // show deployment time
-const now = new Date().toLocaleTimeString('en-GB', { hour12: false });
+const now = new Date();
+const nowTime = now.toLocaleTimeString('en-GB', { hour12: false });
+const nowDate = now.toLocaleDateString();
+
 const titleEl = document.querySelector('h3');
-titleEl.textContent = `${titleEl.textContent} - ${now}`;
+titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 // canvas and context
@@ -19,12 +22,14 @@ const canvasHeight = canvas.height;
 
 // define player
 const playerHeight = 20;
+const playerWidth = 20;
+
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
 let player = {
-  x: 40,
+  x: playerWidth,
   y: playerInitialYPosition,
-  w: 20,
+  w: playerWidth,
   h: playerHeight,
   speed: 2,
   isMoving: false,
@@ -40,35 +45,49 @@ const playerDeepCopy = JSON.stringify(player);
 
 
 // define enemies
-const enemyWidth = 60;
+const enemyWidth = 75;
+const enemyHeight = 20;
+
+
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max + 1 - min) + min);
+};
 
 let enemies = [
   {
     x: 100 - enemyWidth/2,
-    y: 10,
+    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
     w: enemyWidth,
-    h: 20,
+    h: enemyHeight,
+    speed: 1,
+  },
+  {
+    x: 200 - enemyWidth/2,
+    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
+    w: enemyWidth,
+    h: enemyHeight,
     speed: 2,
   },
-  // {
-  //   x: 200 - enemyWidth/2,
-  //   y: 10,
-  //   w: enemyWidth,
-  //   h: 20,
-  //   speed: 3,
-  // },
-  // {
-  //   x: 300 - enemyWidth/2,
-  //   y: 10,
-  //   w: enemyWidth,
-  //   h: 20,
-  //   speed: 4,
-  // }
+  {
+    x: 300 - enemyWidth/2,
+    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
+    w: enemyWidth,
+    h: enemyHeight,
+    speed: 3,
+  }
 ];
 
 const enemyColor = 'tomato';
 
 const enemiesDeepCopy = JSON.stringify(enemies);
+
+// const restoreEnemies = () => {
+//   console.log('enemies', enemies);
+//   enemies = JSON.parse(enemiesDeepCopy).forEach(enemy => {
+//     enemy.y = getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2);
+//     console.log(enemy.y);
+//   });
+// };
 
 
 // define goal
@@ -348,6 +367,7 @@ const startGame = () => {
   
   if (isGameLive) {
     playGame();
+    // console.log('playGame enemies[0].y',enemies[0].y);
   } else {
     cancelAnimation();
     clearCanvas();
