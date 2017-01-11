@@ -324,9 +324,11 @@ const cancelAnimation = () => {
 
 const finishAfterCollision = (msg) => {
   console.log(msg);
-  cancelAnimation();
-  isGameLive = false;
   startButton.textContent = 'Restart';
+  isGameLive = false;
+  cancelAnimation();
+  createFreshEnemies();
+  createFreshPlayer();
 };
 
 const playGame = () => {
@@ -366,15 +368,17 @@ const startGame = () => {
   isGameLive = !isGameLive;
   
   if (isGameLive) {
-    playGame();
     startButton.textContent = 'Stop';
+    playGame();
   } else {
+    startButton.textContent = 'Start';
+    isGamePaused = false;
     cancelAnimation();
     clearCanvas();
-    isGamePaused = false;
+    
     createFreshEnemies();
     createFreshPlayer();
-    startButton.textContent = 'Start';
+    
   }  
 };
 
