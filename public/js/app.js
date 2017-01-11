@@ -10,12 +10,9 @@ const titleEl = document.querySelector('h4');
 titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
-// canvas and context
+// define canvas
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
-
-
-// canvas dimensions
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 
@@ -43,34 +40,39 @@ let player = {
 
 const playerDeepCopy = JSON.stringify(player);
 
+const restorePlayer = () => {
+  player = JSON.parse(playerDeepCopy);
+};
+
 
 // define enemies
 const enemyWidth = 75;
 const enemyHeight = 20;
 
-
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
+const randomiseEnemyY = () => getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2);
+
 let enemies = [
   {
     x: 100 - enemyWidth/2,
-    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
+    y: randomiseEnemyY(),
     w: enemyWidth,
     h: enemyHeight,
     speed: 1,
   },
   {
     x: 200 - enemyWidth/2,
-    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
+    y: randomiseEnemyY(),
     w: enemyWidth,
     h: enemyHeight,
     speed: 2,
   },
   {
     x: 300 - enemyWidth/2,
-    y: getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2),
+    y: randomiseEnemyY(),
     w: enemyWidth,
     h: enemyHeight,
     speed: 3,
@@ -81,17 +83,14 @@ const enemyColor = 'tomato';
 
 const enemiesDeepCopy = JSON.stringify(enemies);
 
-// const restoreEnemies = () => {
-//   console.log('enemies', enemies);
-//   enemies = JSON.parse(enemiesDeepCopy).forEach(enemy => {
-//     enemy.y = getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2);
-//     console.log(enemy.y);
-//   });
-// };
+const restoreEnemies = () => {
+  JSON.parse(enemiesDeepCopy).forEach((enemy, index) => {
+    enemies[index].y = randomiseEnemyY();
+  });
+};
 
 
 // define goal
-
 const goalHeight = 20;
 const goalWidth = 20;
 
@@ -367,13 +366,12 @@ const startGame = () => {
   
   if (isGameLive) {
     playGame();
-    // console.log('playGame enemies[0].y',enemies[0].y);
   } else {
     cancelAnimation();
     clearCanvas();
     isGamePaused = false;
-    enemies = JSON.parse(enemiesDeepCopy);
-    player = JSON.parse(playerDeepCopy);
+    restoreEnemies();
+    restorePlayer();
   }  
 };
 
