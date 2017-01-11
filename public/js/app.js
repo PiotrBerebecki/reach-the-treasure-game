@@ -47,42 +47,69 @@ createFreshPlayer();
 
 
 
-// define enemies
-const enemyWidth = 40;
-const enemyHeight = 20;
+// define enemiesVertical
+const enemyWidth = 35;
+const enemyHeight = 35;
 const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
-const randomiseEnemyY = () => getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2);
+const randomiseEnemyPosition = (enemyDimension, canvasDimension) => getRandomNumber(enemyDimension, canvasDimension - enemyDimension * 2);
 
-let enemies;
+// vertical enemies
+let enemiesVertical;
 
-const createFreshEnemies = () => {  
-  enemies = [];
+const createFreshEnemiesVertical = () => {  
+  enemiesVertical = [];
   let possibleSpeeds = [1,2,3];
   
   for (let i = 0; i < 3; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
-    // console.log(enemySpeed);
     
     let enemy = {
       x: (i+1) * 100 - enemyWidth/2,
-      y: randomiseEnemyY(),
+      y: randomiseEnemyPosition(enemyHeight, canvasHeight),
       w: enemyWidth,
       h: enemyHeight,
       speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
-    enemies[i] = enemy;
+    enemiesVertical[i] = enemy;
   }
 };
 
-createFreshEnemies();
+createFreshEnemiesVertical();
+
+
+// horizontal enemies
+let enemiesHorizontal;
+
+const createFreshEnemiesHorizontal = () => {  
+  enemiesHorizontal = [];
+  let possibleSpeeds = [1,2,3];
+  
+  for (let i = 0; i < 3; i++) {
+    
+    let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
+    let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
+    
+    let enemy = {
+      x: randomiseEnemyPosition(enemyWidth, canvasWidth),
+      y: (i+1) * 100 - enemyHeight/2,
+      w: enemyWidth,
+      h: enemyHeight,
+      speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
+      color: enemyColor
+    };
+    enemiesHorizontal[i] = enemy;
+  }
+};
+
+createFreshEnemiesHorizontal();
 
 
 // define goal
@@ -116,8 +143,7 @@ const drawEnemy = (enemy) => {
 };
 
 
-const updateEnemy = (enemy) => {
-  // console.log(enemy.x);
+const updateEnemyVertical = (enemy) => {
   const { y, h, speed } = enemy;
   
   if (y >= canvasHeight - h) {
@@ -127,6 +153,19 @@ const updateEnemy = (enemy) => {
   }
   
   enemy.y += enemy.speed;  
+};
+
+
+const updateEnemyHorizontal = (enemy) => {
+  const { x, w, speed } = enemy;
+  
+  if (x >= canvasHeight - w) {
+    enemy.speed = -speed;
+  } else if (x <= 0) {
+    enemy.speed = -speed;
+  }
+  
+  enemy.x += enemy.speed;  
 };
 
 
@@ -327,7 +366,8 @@ const finishAfterCollision = (msg) => {
   startButton.textContent = 'Restart';
   isGameLive = false;
   cancelAnimation();
-  createFreshEnemies();
+  createFreshEnemiesVertical();
+  createFreshEnemiesHorizontal();
   createFreshPlayer();
 };
 
@@ -338,9 +378,18 @@ const playGame = () => {
   
   requestId = window.requestAnimationFrame(playGame);
 
-  enemies.forEach(enemy => {
+  enemiesVertical.forEach(enemy => {
     drawEnemy(enemy);
-    updateEnemy(enemy);
+    updateEnemyVertical(enemy);
+    
+    if (checkCollision(player, enemy)) {
+      finishAfterCollision('you lost');
+    }
+  });
+  
+  enemiesHorizontal.forEach(enemy => {
+    drawEnemy(enemy);
+    updateEnemyHorizontal(enemy);
     
     if (checkCollision(player, enemy)) {
       finishAfterCollision('you lost');
@@ -375,10 +424,9 @@ const startGame = () => {
     isGamePaused = false;
     cancelAnimation();
     clearCanvas();
-    
-    createFreshEnemies();
+    createFreshEnemiesVertical();
+    createFreshEnemiesHorizontal();
     createFreshPlayer();
-    
   }  
 };
 
