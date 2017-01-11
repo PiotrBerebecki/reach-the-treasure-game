@@ -10,11 +10,18 @@ const titleEl = document.querySelector('h4');
 titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
+
+// define global dimensions
+const distanceFromEdge = 1;
+
+
+
 // define canvas
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
+const canvasColor = 'white';
 
 
 // define player
@@ -28,7 +35,7 @@ let player;
 
 const createFreshPlayer = () => {
   player = {
-    x: playerWidth,
+    x: distanceFromEdge,
     y: playerInitialYPosition,
     w: playerWidth,
     h: playerHeight,
@@ -46,10 +53,25 @@ const createFreshPlayer = () => {
 createFreshPlayer();
 
 
+// define goal
+const goalHeight = 20;
+const goalWidth = 20;
+const goalColor = 'green';
+
+const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
+
+const goal = {
+  x: canvasWidth - goalWidth - distanceFromEdge,
+  y: goalInitialYPosition,
+  w: 20,
+  h: 20,
+  color: goalColor
+};
+
 
 // define enemiesVertical
-const enemyWidth = 35;
-const enemyHeight = 35;
+const enemyWidth = 20;
+const enemyHeight = 20;
 const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
@@ -61,23 +83,30 @@ const randomiseEnemyPosition = (enemyDimension, canvasDimension) => getRandomNum
 // vertical enemies
 let enemiesVertical;
 
-const createFreshEnemiesVertical = () => {  
+const createFreshEnemiesVertical = () => {
+  const enemyTotal = 2;
   enemiesVertical = [];
-  let possibleSpeeds = [1,2,3];
+  let possibleSpeeds = [];
   
-  for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < enemyTotal; j++) {
+    possibleSpeeds.push(1 + (j/(enemyTotal-1)));
+  }
+  
+  for (let i = 0; i < enemyTotal; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      x: (i+1) * 100 - enemyWidth/2,
+      // x: (i+1) * (canvasWidth-100)/enemyTotal - enemyWidth/2,
+      x: (playerWidth + 9) * (i + 1),
       y: randomiseEnemyPosition(enemyHeight, canvasHeight),
       w: enemyWidth,
       h: enemyHeight,
       speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
+    // console.log(enemy.x);
     enemiesVertical[i] = enemy;
   }
 };
@@ -109,67 +138,20 @@ const createFreshEnemiesHorizontal = () => {
   }
 };
 
-createFreshEnemiesHorizontal();
+// createFreshEnemiesHorizontal();
 
 
-// define goal
-const goalHeight = 20;
-const goalWidth = 20;
-const goalColor = 'green';
 
-const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
-
-const goal = {
-  x: canvasWidth - goalWidth * 2,
-  y: goalInitialYPosition,
-  w: 20,
-  h: 20,
-  color: goalColor
+// canvas draw
+const drawCanvas = () => {
+  ctx.fillStyle = canvasColor;
+  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 };
 
+drawCanvas();
 
 
-const drawGoal = () => {
-  const { x, y, w, h, color } = goal;
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
-};
-
-// enemy movement
-const drawEnemy = (enemy) => {
-  const { x, y, w, h, color } = enemy;
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
-};
-
-
-const updateEnemyVertical = (enemy) => {
-  const { y, h, speed } = enemy;
-  
-  if (y >= canvasHeight - h) {
-    enemy.speed = -speed;
-  } else if (y <= 0) {
-    enemy.speed = -speed;
-  }
-  
-  enemy.y += enemy.speed;  
-};
-
-
-const updateEnemyHorizontal = (enemy) => {
-  const { x, w, speed } = enemy;
-  
-  if (x >= canvasHeight - w) {
-    enemy.speed = -speed;
-  } else if (x <= 0) {
-    enemy.speed = -speed;
-  }
-  
-  enemy.x += enemy.speed;  
-};
-
-
-// player movement
+// player draw and movement
 const drawPlayer = () => {
   const { x, y, w, h, color } = player;
   ctx.fillStyle = color;
@@ -197,6 +179,46 @@ const updatePlayer = () => {
         break;
     }
   }
+};
+
+
+// goal draw
+const drawGoal = () => {
+  const { x, y, w, h, color } = goal;
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+};
+
+
+// enemy draw and movement
+const drawEnemy = (enemy) => {
+  const { x, y, w, h, color } = enemy;
+  ctx.fillStyle = color;
+  ctx.fillRect(x, y, w, h);
+};
+
+const updateEnemyVertical = (enemy) => {
+  const { y, h, speed } = enemy;
+  
+  if (y >= canvasHeight - h) {
+    enemy.speed = -speed;
+  } else if (y <= 0) {
+    enemy.speed = -speed;
+  }
+  
+  enemy.y += enemy.speed;  
+};
+
+const updateEnemyHorizontal = (enemy) => {
+  const { x, w, speed } = enemy;
+  
+  if (x >= canvasHeight - w) {
+    enemy.speed = -speed;
+  } else if (x <= 0) {
+    enemy.speed = -speed;
+  }
+  
+  enemy.x += enemy.speed;  
 };
 
 
@@ -367,12 +389,14 @@ const finishAfterCollision = (msg) => {
   isGameLive = false;
   cancelAnimation();
   createFreshEnemiesVertical();
-  createFreshEnemiesHorizontal();
+  // createFreshEnemiesHorizontal();
   createFreshPlayer();
 };
 
 const playGame = () => {
   clearCanvas();
+  
+  drawCanvas();
   
   drawPlayer();
   
@@ -387,14 +411,14 @@ const playGame = () => {
     }
   });
   
-  enemiesHorizontal.forEach(enemy => {
-    drawEnemy(enemy);
-    updateEnemyHorizontal(enemy);
+  // enemiesHorizontal.forEach(enemy => {
+  //   drawEnemy(enemy);
+  //   updateEnemyHorizontal(enemy);
     
-    if (checkCollision(player, enemy)) {
-      finishAfterCollision('you lost');
-    }
-  });
+  //   if (checkCollision(player, enemy)) {
+  //     finishAfterCollision('you lost');
+  //   }
+  // });
   
   drawGoal();
   
@@ -414,6 +438,7 @@ let isGamePaused = false;
 
 
 const startGame = () => {
+  console.clear();
   isGameLive = !isGameLive;
   
   if (isGameLive) {
@@ -424,8 +449,9 @@ const startGame = () => {
     isGamePaused = false;
     cancelAnimation();
     clearCanvas();
+    drawCanvas();
     createFreshEnemiesVertical();
-    createFreshEnemiesHorizontal();
+    // createFreshEnemiesHorizontal();
     createFreshPlayer();
   }  
 };

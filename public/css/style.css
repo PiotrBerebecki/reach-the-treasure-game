@@ -11,8 +11,9 @@ html {
 
 body {
   display: flex;
-  
   height: 100%;
+  background-color: #03a9f4;
+  color: white;
   font-family: sans-serif;
   user-select: none;
 }
@@ -41,7 +42,7 @@ body {
 
 #canvas {
   width: 100%;
-  border: solid 1px black;
+  /*border: solid 1px black;*/
 }
 
 button {
