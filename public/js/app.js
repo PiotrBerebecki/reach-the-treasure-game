@@ -27,7 +27,7 @@ const canvasColor = 'white';
 // define player
 const playerHeight = 20;
 const playerWidth = 20;
-const playerColor = 'blue';
+const playerColor = '#03a9f4';
 
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
@@ -56,7 +56,7 @@ createFreshPlayer();
 // define goal
 const goalHeight = 20;
 const goalWidth = 20;
-const goalColor = 'green';
+const goalColor = '#4CAF50';
 
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
 
