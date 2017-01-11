@@ -12,7 +12,7 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 // define global dimensions
-const distanceFromEdge = 1;
+const minDistanceFromEdge = 1;
 
 
 
@@ -35,7 +35,7 @@ let player;
 
 const createFreshPlayer = () => {
   player = {
-    x: distanceFromEdge,
+    x: minDistanceFromEdge,
     y: playerInitialYPosition,
     w: playerWidth,
     h: playerHeight,
@@ -61,7 +61,7 @@ const goalColor = '#4CAF50';
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
 
 const goal = {
-  x: canvasWidth - goalWidth - distanceFromEdge,
+  x: canvasWidth - goalWidth - minDistanceFromEdge,
   y: goalInitialYPosition,
   w: 20,
   h: 20,
@@ -78,18 +78,20 @@ const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
-const randomiseEnemyPosition = (enemyDimension, canvasDimension) => getRandomNumber(enemyDimension, canvasDimension - enemyDimension * 2);
+const randomiseEnemyPosition = (enemyDimension, canvasDimension) => {
+  return getRandomNumber(enemyDimension, canvasDimension - enemyDimension * 2);
+};
 
 // vertical enemies
 let enemiesVertical;
 
 const createFreshEnemiesVertical = () => {
-  const enemyTotal = 2;
+  const enemyTotal = 11;
   enemiesVertical = [];
   let possibleSpeeds = [];
   
   for (let j = 0; j < enemyTotal; j++) {
-    possibleSpeeds.push(1 + (j/(enemyTotal-1)));
+    possibleSpeeds.push(1.2 + (j/(enemyTotal-1)));
   }
   
   for (let i = 0; i < enemyTotal; i++) {
@@ -99,7 +101,7 @@ const createFreshEnemiesVertical = () => {
     
     let enemy = {
       // x: (i+1) * (canvasWidth-100)/enemyTotal - enemyWidth/2,
-      x: (playerWidth + 9) * (i + 1),
+      x: (i+1) * (canvasWidth-35)/enemyTotal - enemyWidth/2,
       y: randomiseEnemyPosition(enemyHeight, canvasHeight),
       w: enemyWidth,
       h: enemyHeight,
@@ -143,12 +145,12 @@ const createFreshEnemiesHorizontal = () => {
 
 
 // canvas draw
-const drawCanvas = () => {
+const drawBackground = () => {
   ctx.fillStyle = canvasColor;
   ctx.fillRect(0, 0, canvasWidth, canvasHeight);
 };
 
-drawCanvas();
+drawBackground();
 
 
 // player draw and movement
@@ -163,19 +165,27 @@ const updatePlayer = () => {
     switch(player.movingDirection) {
       case 'left':
         player.x -= player.speed;
-        if (player.x <= 0) { player.x = 0; }
+        if (player.x <= minDistanceFromEdge) {
+          player.x = minDistanceFromEdge;
+        }
         break;
       case 'up':
         player.y -= player.speed;
-        if (player.y <= 0) { player.y = 0; }
+        if (player.y <= minDistanceFromEdge) {
+          player.y = minDistanceFromEdge;
+        }
         break;
       case 'right':
         player.x += player.speed;
-        if (player.x >= canvasWidth - player.w) { player.x = canvasWidth - player.w; }
+        if (player.x >= canvasWidth - player.w - minDistanceFromEdge) { 
+          player.x = canvasWidth - player.w - minDistanceFromEdge;
+        }
         break;
       case 'down':
         player.y += player.speed;
-        if (player.y >= canvasHeight - player.h) { player.y = canvasHeight - player.h; }
+        if (player.y >= canvasHeight - player.h - minDistanceFromEdge) { 
+          player.y = canvasHeight - player.h - minDistanceFromEdge;
+        }
         break;
     }
   }
@@ -396,7 +406,7 @@ const finishAfterCollision = (msg) => {
 const playGame = () => {
   clearCanvas();
   
-  drawCanvas();
+  drawBackground();
   
   drawPlayer();
   
@@ -449,7 +459,7 @@ const startGame = () => {
     isGamePaused = false;
     cancelAnimation();
     clearCanvas();
-    drawCanvas();
+    drawBackground();
     createFreshEnemiesVertical();
     // createFreshEnemiesHorizontal();
     createFreshPlayer();
