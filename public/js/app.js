@@ -20,6 +20,7 @@ const canvasHeight = canvas.height;
 // define player
 const playerHeight = 20;
 const playerWidth = 20;
+const playerColor = 'blue';
 
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
@@ -38,7 +39,7 @@ const createFreshPlayer = () => {
     isUpArrowDown: false,
     isRightArrowDown: false,
     isDownArrowDown: false,
-    color: 'blue'
+    color: playerColor
   };
 };
 
@@ -47,7 +48,7 @@ createFreshPlayer();
 
 
 // define enemies
-const enemyWidth = 75;
+const enemyWidth = 40;
 const enemyHeight = 20;
 const enemyColor = 'tomato';
 
@@ -61,13 +62,20 @@ let enemies;
 
 const createFreshEnemies = () => {  
   enemies = [];
+  let possibleSpeeds = [1,2,3];
+  
   for (let i = 0; i < 3; i++) {
+    
+    let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
+    let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
+    // console.log(enemySpeed);
+    
     let enemy = {
       x: (i+1) * 100 - enemyWidth/2,
       y: randomiseEnemyY(),
       w: enemyWidth,
       h: enemyHeight,
-      speed: (i+1) * (Math.random() >= 0.5 ? 1 : -1),
+      speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
     enemies[i] = enemy;
@@ -80,6 +88,7 @@ createFreshEnemies();
 // define goal
 const goalHeight = 20;
 const goalWidth = 20;
+const goalColor = 'green';
 
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
 
@@ -87,21 +96,22 @@ const goal = {
   x: canvasWidth - goalWidth * 2,
   y: goalInitialYPosition,
   w: 20,
-  h: 20
+  h: 20,
+  color: goalColor
 };
 
-const goalColor = 'green';
+
 
 const drawGoal = () => {
-  const { x, y, w, h } = goal;
-  ctx.fillStyle = goalColor;
+  const { x, y, w, h, color } = goal;
+  ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
 };
 
 // enemy movement
 const drawEnemy = (enemy) => {
-  const { x, y, w, h } = enemy;
-  ctx.fillStyle = enemyColor;
+  const { x, y, w, h, color } = enemy;
+  ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
 };
 
@@ -122,8 +132,8 @@ const updateEnemy = (enemy) => {
 
 // player movement
 const drawPlayer = () => {
-  const { x, y, w, h } = player;
-  ctx.fillStyle = player.color;
+  const { x, y, w, h, color } = player;
+  ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
 };
 
@@ -312,6 +322,13 @@ const cancelAnimation = () => {
   requestId = undefined;
 };
 
+const finishAfterCollision = (msg) => {
+  console.log(msg);
+  cancelAnimation();
+  isGameLive = false;
+  startButton.textContent = 'Restart';
+};
+
 const playGame = () => {
   clearCanvas();
   
@@ -324,16 +341,14 @@ const playGame = () => {
     updateEnemy(enemy);
     
     if (checkCollision(player, enemy)) {
-      console.log('you lost');
-      cancelAnimation();
+      finishAfterCollision('you lost');
     }
   });
   
   drawGoal();
   
   if (checkCollision(player, goal)) {
-    console.log('you won');
-    cancelAnimation();
+    finishAfterCollision('you won');
   }
   
   // break up draw and update player

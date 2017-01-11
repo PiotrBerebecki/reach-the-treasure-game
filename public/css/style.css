@@ -11,10 +11,16 @@ html {
 
 body {
   display: flex;
-  /*align-items: center;*/
+  
   height: 100%;
   font-family: sans-serif;
   user-select: none;
+}
+
+@media screen and (min-width: 601px) {
+  body {
+    align-items: center;
+  }
 }
 
 .app {
@@ -23,11 +29,11 @@ body {
   align-items: center;
   margin-left: auto;
   margin-right: auto;
-  width: 90%;
-  /*border: solid 2px blue;*/
+  width: 95%;
+  /*border: solid 1px blue;*/
 }
 
-@media screen and (min-width: 769px) {
+@media screen and (min-width: 601px) {
   .app {
     width: 400px;
   }
@@ -35,7 +41,7 @@ body {
 
 #canvas {
   width: 100%;
-  border: solid 10px black;
+  border: solid 1px black;
 }
 
 button {
