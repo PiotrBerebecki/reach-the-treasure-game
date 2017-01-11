@@ -23,31 +23,33 @@ const playerWidth = 20;
 
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 
-let player = {
-  x: playerWidth,
-  y: playerInitialYPosition,
-  w: playerWidth,
-  h: playerHeight,
-  speed: 2,
-  isMoving: false,
-  movingDirection: null,
-  isLeftArrowDown: false,
-  isUpArrowDown: false,
-  isRightArrowDown: false,
-  isDownArrowDown: false,
-  color: 'blue'
+let player;
+
+const createFreshPlayer = () => {
+  player = {
+    x: playerWidth,
+    y: playerInitialYPosition,
+    w: playerWidth,
+    h: playerHeight,
+    speed: 2,
+    isMoving: false,
+    movingDirection: null,
+    isLeftArrowDown: false,
+    isUpArrowDown: false,
+    isRightArrowDown: false,
+    isDownArrowDown: false,
+    color: 'blue'
+  };
 };
 
-const playerDeepCopy = JSON.stringify(player);
+createFreshPlayer();
 
-const restorePlayer = () => {
-  player = JSON.parse(playerDeepCopy);
-};
 
 
 // define enemies
 const enemyWidth = 75;
 const enemyHeight = 20;
+const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
@@ -55,39 +57,24 @@ const getRandomNumber = (min, max) => {
 
 const randomiseEnemyY = () => getRandomNumber(enemyHeight, canvasHeight - enemyHeight * 2);
 
-let enemies = [
-  {
-    x: 100 - enemyWidth/2,
-    y: randomiseEnemyY(),
-    w: enemyWidth,
-    h: enemyHeight,
-    speed: 1,
-  },
-  {
-    x: 200 - enemyWidth/2,
-    y: randomiseEnemyY(),
-    w: enemyWidth,
-    h: enemyHeight,
-    speed: 2,
-  },
-  {
-    x: 300 - enemyWidth/2,
-    y: randomiseEnemyY(),
-    w: enemyWidth,
-    h: enemyHeight,
-    speed: 3,
+let enemies;
+
+const createFreshEnemies = () => {  
+  enemies = [];
+  for (let i = 0; i < 3; i++) {
+    let enemy = {
+      x: (i+1) * 100 - enemyWidth/2,
+      y: randomiseEnemyY(),
+      w: enemyWidth,
+      h: enemyHeight,
+      speed: (i+1) * (Math.random() >= 0.5 ? 1 : -1),
+      color: enemyColor
+    };
+    enemies[i] = enemy;
   }
-];
-
-const enemyColor = 'tomato';
-
-const enemiesDeepCopy = JSON.stringify(enemies);
-
-const restoreEnemies = () => {
-  JSON.parse(enemiesDeepCopy).forEach((enemy, index) => {
-    enemies[index].y = randomiseEnemyY();
-  });
 };
+
+createFreshEnemies();
 
 
 // define goal
@@ -337,7 +324,7 @@ const playGame = () => {
     updateEnemy(enemy);
     
     if (checkCollision(player, enemy)) {
-      console.log('collision');
+      console.log('you lost');
       cancelAnimation();
     }
   });
@@ -362,16 +349,17 @@ let isGamePaused = false;
 
 const startGame = () => {
   isGameLive = !isGameLive;
-  // console.log(isGameLive);
   
   if (isGameLive) {
     playGame();
+    startButton.textContent = 'Stop';
   } else {
     cancelAnimation();
     clearCanvas();
     isGamePaused = false;
-    restoreEnemies();
-    restorePlayer();
+    createFreshEnemies();
+    createFreshPlayer();
+    startButton.textContent = 'Start';
   }  
 };
 
