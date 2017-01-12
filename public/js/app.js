@@ -11,10 +11,33 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 
-// define global dimensions
+// define global variables
+let enemyTotal = 11;
 const minDistanceFromEdge = 1;
-let globalWidth = 20;
-let globalHeight = 20;
+
+let playerWidth;
+let playerHeight;
+let goalWidth;
+let goalHeight;
+let enemyWidth;
+let enemyHeight;
+
+const setGlobalWidth = (width) => {
+  playerWidth = width;
+  goalWidth = width;
+  enemyWidth = width;
+};
+setGlobalWidth(20);
+
+const setGlobalHeight = (height) => {
+  playerHeight = height;
+  goalHeight = height;
+  enemyHeight = height;
+};
+setGlobalHeight(20);
+
+const minEnemySpeed = 1;
+const maxEnemySpeed = 3;
 
 
 // define canvas
@@ -26,12 +49,8 @@ const canvasColor = 'white';
 
 
 // define player
-const playerWidth = globalWidth;
-const playerHeight = globalHeight;
 const playerColor = '#03a9f4';
-
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
-
 let player;
 
 const createFreshPlayer = () => {
@@ -55,8 +74,6 @@ createFreshPlayer();
 
 
 // define goal
-const goalWidth = globalWidth;
-const goalHeight = globalHeight;
 const goalColor = '#4CAF50';
 
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
@@ -64,15 +81,13 @@ const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
 const goal = {
   x: canvasWidth - goalWidth - minDistanceFromEdge,
   y: goalInitialYPosition,
-  w: 20,
-  h: 20,
+  w: goalWidth,
+  h: goalHeight,
   color: goalColor
 };
 
 
 // define enemiesVertical
-const enemyWidth = globalWidth;
-const enemyHeight = globalHeight;
 const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
@@ -87,12 +102,17 @@ const randomiseEnemyPosition = (enemyDimension, canvasDimension) => {
 let enemiesVertical;
 
 const createFreshEnemiesVertical = () => {
-  const enemyTotal = 11;
-  const minEnemySpeed = 1;
-  const maxEnemySpeed = 2;
   enemiesVertical = [];
   let possibleSpeeds = [];
   const distBetweenEnemies = canvasWidth / (enemyTotal+1);
+  
+  // if (distBetweenEnemies - enemyWidth/2 < 22) {
+  //   console.log('reducing size');
+    
+  //   setGlobalWidth(enemyWidth/2);
+  //   setGlobalHeight(enemyHeight/2);
+  //   console.log(enemyWidth, enemyHeight, playerWidth, goalWidth);
+  // }
   
   for (let j = 0; j < enemyTotal; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
