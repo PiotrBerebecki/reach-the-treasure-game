@@ -13,7 +13,8 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 // define global dimensions
 const minDistanceFromEdge = 1;
-
+let globalWidth = 20;
+let globalHeight = 20;
 
 
 // define canvas
@@ -25,8 +26,8 @@ const canvasColor = 'white';
 
 
 // define player
-const playerHeight = 20;
-const playerWidth = 20;
+const playerWidth = globalWidth;
+const playerHeight = globalHeight;
 const playerColor = '#03a9f4';
 
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
@@ -54,8 +55,8 @@ createFreshPlayer();
 
 
 // define goal
-const goalHeight = 20;
-const goalWidth = 20;
+const goalWidth = globalWidth;
+const goalHeight = globalHeight;
 const goalColor = '#4CAF50';
 
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
@@ -70,8 +71,8 @@ const goal = {
 
 
 // define enemiesVertical
-let enemyWidth = 20;
-const enemyHeight = 20;
+const enemyWidth = globalWidth;
+const enemyHeight = globalHeight;
 const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
