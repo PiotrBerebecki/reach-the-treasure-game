@@ -70,7 +70,7 @@ const goal = {
 
 
 // define enemiesVertical
-const enemyWidth = 20;
+let enemyWidth = 20;
 const enemyHeight = 20;
 const enemyColor = 'tomato';
 
@@ -87,11 +87,16 @@ let enemiesVertical;
 
 const createFreshEnemiesVertical = () => {
   const enemyTotal = 11;
+  const minEnemySpeed = 1;
+  const maxEnemySpeed = 2;
   enemiesVertical = [];
   let possibleSpeeds = [];
+  const distBetweenEnemies = canvasWidth / (enemyTotal+1);
   
   for (let j = 0; j < enemyTotal; j++) {
-    possibleSpeeds.push(1.2 + (j/(enemyTotal-1)));
+    // include || 1 to avoid dividing by 0 if only 1 enemy
+    possibleSpeeds.push(minEnemySpeed + j *
+     (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
   }
   
   for (let i = 0; i < enemyTotal; i++) {
@@ -100,17 +105,17 @@ const createFreshEnemiesVertical = () => {
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      // x: (i+1) * (canvasWidth-100)/enemyTotal - enemyWidth/2,
-      x: (i+1) * (canvasWidth-35)/enemyTotal - enemyWidth/2,
+      x: (distBetweenEnemies + i*distBetweenEnemies) - enemyWidth/2,
       y: randomiseEnemyPosition(enemyHeight, canvasHeight),
       w: enemyWidth,
       h: enemyHeight,
       speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
-    // console.log(enemy.x);
     enemiesVertical[i] = enemy;
   }
+  
+  // console.log(enemiesVertical[0].x);
 };
 
 createFreshEnemiesVertical();
@@ -404,7 +409,7 @@ const finishAfterCollision = (msg) => {
 };
 
 const playGame = () => {
-  clearCanvas();
+  // clearCanvas();
   
   drawBackground();
   
@@ -448,7 +453,7 @@ let isGamePaused = false;
 
 
 const startGame = () => {
-  console.clear();
+  // console.clear();
   isGameLive = !isGameLive;
   
   if (isGameLive) {
