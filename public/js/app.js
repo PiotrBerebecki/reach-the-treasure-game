@@ -37,7 +37,7 @@ const setGlobalHeight = (height) => {
 setGlobalHeight(20);
 
 const minEnemySpeed = 1;
-const maxEnemySpeed = 3;
+const maxEnemySpeed = 2;
 
 
 // define canvas
@@ -87,7 +87,7 @@ const goal = {
 };
 
 
-// define enemiesVertical
+// define enemies
 const enemyColor = 'tomato';
 
 const getRandomNumber = (min, max) => {
@@ -105,14 +105,7 @@ const createFreshEnemiesVertical = () => {
   enemiesVertical = [];
   let possibleSpeeds = [];
   const distBetweenEnemies = canvasWidth / (enemyTotal+1);
-  
-  // if (distBetweenEnemies - enemyWidth/2 < 22) {
-  //   console.log('reducing size');
-    
-  //   setGlobalWidth(enemyWidth/2);
-  //   setGlobalHeight(enemyHeight/2);
-  //   console.log(enemyWidth, enemyHeight, playerWidth, goalWidth);
-  // }
+  console.log(distBetweenEnemies);
   
   for (let j = 0; j < enemyTotal; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
@@ -136,7 +129,7 @@ const createFreshEnemiesVertical = () => {
     enemiesVertical[i] = enemy;
   }
   
-  // console.log(enemiesVertical[0].x);
+  console.log(enemiesVertical[0].x);
 };
 
 createFreshEnemiesVertical();
@@ -440,11 +433,12 @@ const playGame = () => {
 
   enemiesVertical.forEach(enemy => {
     drawEnemy(enemy);
-    updateEnemyVertical(enemy);
     
     if (checkCollision(player, enemy)) {
       finishAfterCollision('you lost');
     }
+    
+    updateEnemyVertical(enemy);
   });
   
   // enemiesHorizontal.forEach(enemy => {
