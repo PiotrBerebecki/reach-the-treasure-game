@@ -23,9 +23,9 @@ const canvasColor = 'white';
 let round = 1;
 let enemyTotal = round;
 let minEnemySpeed = 1;
-let maxEnemySpeed = 2;
+let maxEnemySpeed = minEnemySpeed + 1;
 
-const nextRound = (playerY) => {
+const nextRound = (playerX, playerY) => {
   round += 1;
   console.log('Round', round);
   enemyTotal = round;
@@ -33,7 +33,7 @@ const nextRound = (playerY) => {
   maxEnemySpeed *= 0.91;
   
   cancelAnimation();
-  createFreshPlayer(playerY);
+  createFreshPlayer(playerX, playerY);
   craeteFreshGoal();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
@@ -42,41 +42,31 @@ const nextRound = (playerY) => {
 
 const minDistanceFromEdge = 1;
 
-let playerWidth;
-let playerHeight;
-let goalWidth;
-let goalHeight;
-let enemyWidth;
-let enemyHeight;
+let playerSize;
+let goalSize;
+let enemySize;
 
-const setGlobalWidth = (width) => {
-  playerWidth = width;
-  goalWidth = width;
-  enemyWidth = width;
+const setPawnSize = (size) => {
+  playerSize = size;
+  goalSize = size;
+  enemySize = size;
 };
-setGlobalWidth(20);
-
-const setGlobalHeight = (height) => {
-  playerHeight = height;
-  goalHeight = height;
-  enemyHeight = height;
-};
-setGlobalHeight(20);
+setPawnSize(20);
 
 
 
 // define player
 const playerColor = 'rgba(3,169,244,1)';
 const playerColorInitial = 'rgba(3,169,244,0.3)';
-const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
+const playerInitialYPosition = canvasHeight / 2 - playerSize / 2;
 let player;
 
 const createFreshPlayer = (x = minDistanceFromEdge, y = playerInitialYPosition) => {
   player = {
     x: x,
     y: y,
-    w: playerWidth,
-    h: playerHeight,
+    w: playerSize,
+    h: playerSize,
     speed: 2,
     isMoving: false,
     doneFirstMove: false,
@@ -96,19 +86,19 @@ createFreshPlayer();
 // define goal
 const goalColor = '#4CAF50';
 
-const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
+const goalInitialYPosition = canvasHeight / 2 - goalSize / 2;
 let goal;
 
 const craeteFreshGoal = () => {  
   const x = round % 2 === 1 ? 
-    canvasWidth - goalWidth - minDistanceFromEdge :
+    canvasWidth - goalSize - minDistanceFromEdge :
     minDistanceFromEdge;
   
   goal = {
     x: x,
     y: goalInitialYPosition,
-    w: goalWidth,
-    h: goalHeight,
+    w: goalSize,
+    h: goalSize,
     color: goalColor
   };
 };
@@ -149,10 +139,10 @@ const createFreshEnemiesVertical = () => {
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      x: (distBetweenEnemies + i*distBetweenEnemies) - enemyHeight/2,
-      y: randomiseEnemyPosition(enemyHeight, canvasHeight),
-      w: enemyWidth,
-      h: enemyHeight,
+      x: (distBetweenEnemies + i*distBetweenEnemies) - enemySize/2,
+      y: randomiseEnemyPosition(enemySize, canvasHeight),
+      w: enemySize,
+      h: enemySize,
       speedX: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
       speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
@@ -184,10 +174,10 @@ const createFreshEnemiesHorizontal = () => {
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      x: randomiseEnemyPosition(enemyWidth, canvasWidth),
-      y: (distBetweenEnemies + i*distBetweenEnemies) - enemyWidth/2,
-      w: enemyWidth,
-      h: enemyHeight,
+      x: randomiseEnemyPosition(enemySize, canvasWidth),
+      y: (distBetweenEnemies + i*distBetweenEnemies) - enemySize/2,
+      w: enemySize,
+      h: enemySize,
       speedX: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
       speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
@@ -375,17 +365,20 @@ const processTouchStart = e => {
     player.color = playerColor;
     player.isUpdated = true;
   }
-  [touchDirectionStart.x, touchDirectionStart.y] = [e.touches[0].clientX, e.touches[0].clientY];
+  [touchDirectionStart.x, touchDirectionStart.y] = 
+    [e.touches[0].clientX, e.touches[0].clientY];
 };
 
 const processTouchMove = e => {
   e.preventDefault();
-  [touchDirectionMove.x, touchDirectionMove.y] = [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
+  [touchDirectionMove.x, touchDirectionMove.y] = 
+    [e.changedTouches[0].clientX, e.changedTouches[0].clientY];
   
   const changeX = touchDirectionMove.x - touchDirectionStart.x;
   const changeY = touchDirectionMove.y - touchDirectionStart.y;
   
-  [touchDirectionStart.x, touchDirectionStart.y] = [touchDirectionMove.x, touchDirectionMove.y];
+  [touchDirectionStart.x, touchDirectionStart.y] = 
+    [touchDirectionMove.x, touchDirectionMove.y];
   
   const changeXAbs = Math.abs(changeX);
   const changeYAbs = Math.abs(changeY);
@@ -459,16 +452,12 @@ const finishAfterCollision = (msg) => {
   createFreshEnemiesHorizontal();
 };
 
-const playGame = () => {
-  // clearCanvas();
-  
+const playGame = () => {  
   drawBackground();
-  
   drawPlayer();
+  drawGoal();
   
   requestId = window.requestAnimationFrame(playGame);
-  
-  drawGoal();
   
   if (checkCollision(player, goal)) {
     return nextRound(player.x, player.y);
