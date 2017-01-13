@@ -20,9 +20,25 @@ const canvasColor = 'white';
 
 
 // define game variables
-let enemyTotal = 2;
-const minEnemySpeed = 2;
-const maxEnemySpeed = 3;
+let round = 1;
+let enemyTotal = round;
+let minEnemySpeed = 1;
+let maxEnemySpeed = 2;
+
+const nextRound = (playerY) => {
+  round += 1;
+  console.log('Round', round);
+  enemyTotal = round;
+  minEnemySpeed *= 0.9;
+  maxEnemySpeed *= 0.9;
+  
+  cancelAnimation();
+  createFreshEnemiesVertical();
+  createFreshEnemiesHorizontal();
+  createFreshPlayer(playerY);
+  console.log('isGameLive', isGameLive);
+  playGame();
+};
 
 const minDistanceFromEdge = 1;
 
@@ -55,10 +71,10 @@ const playerColorInitial = 'rgba(3,169,244,0.3)';
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 let player;
 
-const createFreshPlayer = () => {
+const createFreshPlayer = (y = playerInitialYPosition) => {
   player = {
     x: minDistanceFromEdge,
-    y: playerInitialYPosition,
+    y: y,
     w: playerWidth,
     h: playerHeight,
     speed: 2,
@@ -115,6 +131,8 @@ const createFreshEnemiesVertical = () => {
     possibleSpeeds.push(minEnemySpeed + j *
      (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
   }
+  
+  console.log(possibleSpeeds[possibleSpeeds.length-1]);
     
   for (let i = 0; i < enemyTotal; i++) {
     
@@ -449,7 +467,7 @@ const playGame = () => {
   drawGoal();
   
   if (checkCollision(player, goal)) {
-    finishAfterCollision('you won');
+    return nextRound(player.y);
   }
 
   for (let i = 0; i < enemyTotal; i++) {
