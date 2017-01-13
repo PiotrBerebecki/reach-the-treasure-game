@@ -12,7 +12,8 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 // define global variables
-let enemyTotal = 11;
+let enemyTotal = 2;
+// const maxEnemies = 11;
 const minDistanceFromEdge = 1;
 
 let playerWidth;
@@ -105,7 +106,6 @@ const createFreshEnemiesVertical = () => {
   enemiesVertical = [];
   let possibleSpeeds = [];
   const distBetweenEnemies = canvasWidth / (enemyTotal+1);
-  console.log(distBetweenEnemies);
   
   for (let j = 0; j < enemyTotal; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
@@ -128,8 +128,6 @@ const createFreshEnemiesVertical = () => {
     };
     enemiesVertical[i] = enemy;
   }
-  
-  console.log(enemiesVertical[0].x);
 };
 
 createFreshEnemiesVertical();
@@ -505,3 +503,23 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
+
+
+// enemy number selection
+// const enemyNumberSelector = document.getElementById('enemy-number-selector');
+
+// const renderEnemyNumberSelectorOptions = (n) => {
+//   for (let i = 0; i < n; i++) {
+//     let optionEl = document.createElement('option');
+//     optionEl.value = i + 1;
+//     optionEl.textContent = i + 1;
+//     enemyNumberSelector.appendChild(optionEl);
+//   }
+// };
+
+// renderEnemyNumberSelectorOptions(maxEnemies);
+
+// enemyNumberSelector.addEventListener('change', (e) => {
+//   console.log(e.target.value);
+//   enemyTotal = Number(e.target.value);
+// });
