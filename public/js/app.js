@@ -29,14 +29,14 @@ const nextRound = (playerY) => {
   round += 1;
   console.log('Round', round);
   enemyTotal = round;
-  minEnemySpeed *= 0.9;
-  maxEnemySpeed *= 0.9;
+  minEnemySpeed *= 0.91;
+  maxEnemySpeed *= 0.91;
   
   cancelAnimation();
+  createFreshPlayer(playerY);
+  craeteFreshGoal();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
-  createFreshPlayer(playerY);
-  console.log('isGameLive', isGameLive);
   playGame();
 };
 
@@ -71,9 +71,9 @@ const playerColorInitial = 'rgba(3,169,244,0.3)';
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 let player;
 
-const createFreshPlayer = (y = playerInitialYPosition) => {
+const createFreshPlayer = (x = minDistanceFromEdge, y = playerInitialYPosition) => {
   player = {
-    x: minDistanceFromEdge,
+    x: x,
     y: y,
     w: playerWidth,
     h: playerHeight,
@@ -97,14 +97,23 @@ createFreshPlayer();
 const goalColor = '#4CAF50';
 
 const goalInitialYPosition = canvasHeight / 2 - goalHeight / 2;
+let goal;
 
-const goal = {
-  x: canvasWidth - goalWidth - minDistanceFromEdge,
-  y: goalInitialYPosition,
-  w: goalWidth,
-  h: goalHeight,
-  color: goalColor
+const craeteFreshGoal = () => {  
+  const x = round % 2 === 1 ? 
+    canvasWidth - goalWidth - minDistanceFromEdge :
+    minDistanceFromEdge;
+  
+  goal = {
+    x: x,
+    y: goalInitialYPosition,
+    w: goalWidth,
+    h: goalHeight,
+    color: goalColor
+  };
 };
+
+craeteFreshGoal();
 
 
 // define enemies
@@ -132,7 +141,7 @@ const createFreshEnemiesVertical = () => {
      (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
   }
   
-  console.log(possibleSpeeds[possibleSpeeds.length-1]);
+  // console.log(possibleSpeeds[possibleSpeeds.length-1]);
     
   for (let i = 0; i < enemyTotal; i++) {
     
@@ -406,23 +415,17 @@ const processTouchMove = e => {
     
   switch (true) {
     case isMoveRight:
-      console.log('right');
       player.movingDirection = 'right';
       break;
     case isMoveLeft:
-      console.log('left');
       player.movingDirection = 'left';
       break;
     case isMoveDown:
-      console.log('down');
       player.movingDirection = 'down';
       break;
     case isMoveUp:
-      console.log('up');
       player.movingDirection = 'up';
       break;
-    default: 
-      console.log('unknown direction');
   }
 };
 
@@ -450,9 +453,10 @@ const finishAfterCollision = (msg) => {
   startButton.textContent = 'Restart';
   isGameLive = false;
   cancelAnimation();
+  createFreshPlayer();
+  craeteFreshGoal();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
-  createFreshPlayer();
 };
 
 const playGame = () => {
@@ -467,7 +471,7 @@ const playGame = () => {
   drawGoal();
   
   if (checkCollision(player, goal)) {
-    return nextRound(player.y);
+    return nextRound(player.x, player.y);
   }
 
   for (let i = 0; i < enemyTotal; i++) {
@@ -499,7 +503,6 @@ let isGamePaused = false;
 
 
 const startGame = () => {
-  // console.clear();
   isGameLive = !isGameLive;
   
   if (isGameLive) {
@@ -511,9 +514,10 @@ const startGame = () => {
     cancelAnimation();
     clearCanvas();
     drawBackground();
+    createFreshPlayer();
+    craeteFreshGoal();
     createFreshEnemiesVertical();
     createFreshEnemiesHorizontal();
-    createFreshPlayer();
   }  
 };
 
