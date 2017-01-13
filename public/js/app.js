@@ -12,8 +12,7 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 // define global variables
-let enemyTotal = 2;
-// const maxEnemies = 11;
+let enemyTotal = 1;
 const minDistanceFromEdge = 1;
 
 let playerWidth;
@@ -136,18 +135,25 @@ createFreshEnemiesVertical();
 // horizontal enemies
 let enemiesHorizontal;
 
-const createFreshEnemiesHorizontal = () => {  
+const createFreshEnemiesHorizontal = () => {
   enemiesHorizontal = [];
-  let possibleSpeeds = [1,2,3];
+  let possibleSpeeds = [];
+  const distBetweenEnemies = canvasWidth / (enemyTotal+1);
   
-  for (let i = 0; i < 3; i++) {
+  for (let j = 0; j < enemyTotal; j++) {
+    // include || 1 to avoid dividing by 0 if only 1 enemy
+    possibleSpeeds.push(minEnemySpeed + j *
+     (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
+  }
+  
+  for (let i = 0; i < enemyTotal; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
       x: randomiseEnemyPosition(enemyWidth, canvasWidth),
-      y: (i+1) * 100 - enemyHeight/2,
+      y: (distBetweenEnemies + i*distBetweenEnemies) - enemyWidth/2,
       w: enemyWidth,
       h: enemyHeight,
       speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
@@ -157,7 +163,7 @@ const createFreshEnemiesHorizontal = () => {
   }
 };
 
-// createFreshEnemiesHorizontal();
+createFreshEnemiesHorizontal();
 
 
 
@@ -416,7 +422,7 @@ const finishAfterCollision = (msg) => {
   isGameLive = false;
   cancelAnimation();
   createFreshEnemiesVertical();
-  // createFreshEnemiesHorizontal();
+  createFreshEnemiesHorizontal();
   createFreshPlayer();
 };
 
@@ -439,14 +445,15 @@ const playGame = () => {
     updateEnemyVertical(enemy);
   });
   
-  // enemiesHorizontal.forEach(enemy => {
-  //   drawEnemy(enemy);
-  //   updateEnemyHorizontal(enemy);
+  enemiesHorizontal.forEach(enemy => {
+    drawEnemy(enemy);
     
-  //   if (checkCollision(player, enemy)) {
-  //     finishAfterCollision('you lost');
-  //   }
-  // });
+    if (checkCollision(player, enemy)) {
+      finishAfterCollision('you lost');
+    }
+    
+    updateEnemyHorizontal(enemy);
+  });
   
   drawGoal();
   
@@ -479,7 +486,7 @@ const startGame = () => {
     clearCanvas();
     drawBackground();
     createFreshEnemiesVertical();
-    // createFreshEnemiesHorizontal();
+    createFreshEnemiesHorizontal();
     createFreshPlayer();
   }  
 };
@@ -503,23 +510,3 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
-
-
-// enemy number selection
-// const enemyNumberSelector = document.getElementById('enemy-number-selector');
-
-// const renderEnemyNumberSelectorOptions = (n) => {
-//   for (let i = 0; i < n; i++) {
-//     let optionEl = document.createElement('option');
-//     optionEl.value = i + 1;
-//     optionEl.textContent = i + 1;
-//     enemyNumberSelector.appendChild(optionEl);
-//   }
-// };
-
-// renderEnemyNumberSelectorOptions(maxEnemies);
-
-// enemyNumberSelector.addEventListener('change', (e) => {
-//   console.log(e.target.value);
-//   enemyTotal = Number(e.target.value);
-// });
