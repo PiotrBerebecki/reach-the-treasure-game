@@ -11,8 +11,19 @@ titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
 
 
 
-// define global variables
-let enemyTotal = 1;
+// define canvas
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const canvasWidth = canvas.width;
+const canvasHeight = canvas.height;
+const canvasColor = 'white';
+
+
+// define game variables
+let enemyTotal = 2;
+const minEnemySpeed = 2;
+const maxEnemySpeed = 3;
+
 const minDistanceFromEdge = 1;
 
 let playerWidth;
@@ -36,20 +47,11 @@ const setGlobalHeight = (height) => {
 };
 setGlobalHeight(20);
 
-const minEnemySpeed = 1;
-const maxEnemySpeed = 2;
-
-
-// define canvas
-const canvas = document.getElementById('canvas');
-const ctx = canvas.getContext('2d');
-const canvasWidth = canvas.width;
-const canvasHeight = canvas.height;
-const canvasColor = 'white';
 
 
 // define player
-const playerColor = '#03a9f4';
+const playerColor = 'rgba(3,169,244,1)';
+const playerColorInitial = 'rgba(3,169,244,0.3)';
 const playerInitialYPosition = canvasHeight / 2 - playerHeight / 2;
 let player;
 
@@ -61,12 +63,14 @@ const createFreshPlayer = () => {
     h: playerHeight,
     speed: 2,
     isMoving: false,
+    doneFirstMove: false,
+    isUpdated: false,
     movingDirection: null,
     isLeftArrowDown: false,
     isUpArrowDown: false,
     isRightArrowDown: false,
     isDownArrowDown: false,
-    color: playerColor
+    color: playerColorInitial,
   };
 };
 
@@ -111,18 +115,19 @@ const createFreshEnemiesVertical = () => {
     possibleSpeeds.push(minEnemySpeed + j *
      (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
   }
-  
+    
   for (let i = 0; i < enemyTotal; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      x: (distBetweenEnemies + i*distBetweenEnemies) - enemyWidth/2,
+      x: (distBetweenEnemies + i*distBetweenEnemies) - enemyHeight/2,
       y: randomiseEnemyPosition(enemyHeight, canvasHeight),
       w: enemyWidth,
       h: enemyHeight,
-      speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
+      speedX: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
+      speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
     enemiesVertical[i] = enemy;
@@ -138,7 +143,7 @@ let enemiesHorizontal;
 const createFreshEnemiesHorizontal = () => {
   enemiesHorizontal = [];
   let possibleSpeeds = [];
-  const distBetweenEnemies = canvasWidth / (enemyTotal+1);
+  const distBetweenEnemies = canvasHeight / (enemyTotal+1);
   
   for (let j = 0; j < enemyTotal; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
@@ -156,7 +161,8 @@ const createFreshEnemiesHorizontal = () => {
       y: (distBetweenEnemies + i*distBetweenEnemies) - enemyWidth/2,
       w: enemyWidth,
       h: enemyHeight,
-      speed: (enemySpeed+1) * (Math.random() >= 0.5 ? 1 : -1),
+      speedX: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
+      speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
       color: enemyColor
     };
     enemiesHorizontal[i] = enemy;
@@ -230,29 +236,26 @@ const drawEnemy = (enemy) => {
   ctx.fillRect(x, y, w, h);
 };
 
-const updateEnemyVertical = (enemy) => {
-  const { y, h, speed } = enemy;
+const updateEnemy = (enemy) => {
+  const { x, y, w, h, speedX, speedY } = enemy;
   
   if (y >= canvasHeight - h) {
-    enemy.speed = -speed;
+    enemy.speedY = -speedY;
   } else if (y <= 0) {
-    enemy.speed = -speed;
+    enemy.speedY = -speedY;
   }
   
-  enemy.y += enemy.speed;  
+  enemy.y += enemy.speedY;  
+
+  if (x >= canvasWidth - w) {
+    enemy.speedX = -speedX;
+  } else if (x <= 0) {
+    enemy.speedX = -speedX;
+  }
+  
+  enemy.x += enemy.speedX;  
 };
 
-const updateEnemyHorizontal = (enemy) => {
-  const { x, w, speed } = enemy;
-  
-  if (x >= canvasHeight - w) {
-    enemy.speed = -speed;
-  } else if (x <= 0) {
-    enemy.speed = -speed;
-  }
-  
-  enemy.x += enemy.speed;  
-};
 
 
 // detect collision between player and enemy
@@ -267,7 +270,12 @@ const checkCollision = (player, rect) => {
 
 // control with keyboard
 const movePlayer = e => {
-  // e.preventDefault();
+  if (!player.isUpdated && isGameLive) {
+    player.doneFirstMove = true;
+    player.color = playerColor;
+    player.isUpdated = true;
+  }
+  
   player.isMoving = true;
  
   switch(e.keyCode) {
@@ -335,6 +343,11 @@ const touchDirectionMove = {
 };
 
 const processTouchStart = e => {
+  if (!player.isUpdated && isGameLive) {
+    player.doneFirstMove = true;
+    player.color = playerColor;
+    player.isUpdated = true;
+  }
   [touchDirectionStart.x, touchDirectionStart.y] = [e.touches[0].clientX, e.touches[0].clientY];
 };
 
@@ -370,8 +383,6 @@ const processTouchMove = e => {
     isMoveUp = !isMoveDown;
   }
   
-  // console.log(changeXAbs, changeYAbs);
-
   player.isMoving = true;
   player.movingDirection = 'left';
     
@@ -434,31 +445,28 @@ const playGame = () => {
   drawPlayer();
   
   requestId = window.requestAnimationFrame(playGame);
-
-  enemiesVertical.forEach(enemy => {
-    drawEnemy(enemy);
-    
-    if (checkCollision(player, enemy)) {
-      finishAfterCollision('you lost');
-    }
-    
-    updateEnemyVertical(enemy);
-  });
-  
-  enemiesHorizontal.forEach(enemy => {
-    drawEnemy(enemy);
-    
-    if (checkCollision(player, enemy)) {
-      finishAfterCollision('you lost');
-    }
-    
-    updateEnemyHorizontal(enemy);
-  });
   
   drawGoal();
   
   if (checkCollision(player, goal)) {
     finishAfterCollision('you won');
+  }
+
+  for (let i = 0; i < enemyTotal; i++) {
+    drawEnemy(enemiesVertical[i]);
+    drawEnemy(enemiesHorizontal[i]);
+    
+    if (player.doneFirstMove) {
+      if (checkCollision(player, enemiesVertical[i])) {
+        finishAfterCollision('you lost');
+      }
+      if (checkCollision(player, enemiesHorizontal[i])) {
+        finishAfterCollision('you lost');
+      }
+    }
+    
+    updateEnemy(enemiesVertical[i]);
+    updateEnemy(enemiesHorizontal[i]);
   }
   
   // break up draw and update player
