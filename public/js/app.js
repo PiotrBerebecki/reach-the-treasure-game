@@ -20,7 +20,7 @@ const canvasColor = 'white';
 
 
 // define game variables
-let round = 1;
+let round = 4;
 let totalEnemies = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
@@ -500,17 +500,11 @@ const finishAfterCollision = (msg) => {
   startButton.textContent = 'Restart';
   isGameLive = false;
   cancelAnimation();
-  createFreshPlayer();
-  craeteFreshGoals();
-  createFreshEnemiesVertical();
-  createFreshEnemiesHorizontal();
 };
 
 const playGame = () => {  
   drawBackground();
   drawPlayer();
-  // break up draw and update player
-  // to better show the alignment of collision
   updatePlayer();
   
   for (let i = 0; i < totalGoals; i++) {
@@ -533,6 +527,7 @@ const playGame = () => {
       if (checkCollision(player, enemiesVertical[i])) {
         finishAfterCollision('you lost');
       }
+      
       if (checkCollision(player, enemiesHorizontal[i])) {
         finishAfterCollision('you lost');
       }
@@ -554,6 +549,10 @@ const startGame = () => {
   
   if (isGameLive) {
     startButton.textContent = 'Stop';
+    createFreshPlayer();
+    craeteFreshGoals();
+    createFreshEnemiesVertical();
+    createFreshEnemiesHorizontal();
     playGame();
   } else {
     startButton.textContent = 'Start';
