@@ -34,7 +34,6 @@ const displayRound = (round) => {
 displayRound(round);
 
 const nextRound = () => {
-  
   // temporarily prevent player from moving
   // after reaching the goal
   window.removeEventListener('keydown', movePlayer);
@@ -76,9 +75,25 @@ setPawnSize(20);
 
 
 
+// load all images
+const sprites = {};
+const load = () => {
+  sprites.player = new Image();
+  sprites.player.src = './public/images/player.png';
+  
+  sprites.playerSteady = new Image();
+  sprites.playerSteady.src = './public/images/player-steady.png';
+  
+  sprites.enemy = new Image();
+  sprites.enemy.src = './public/images/enemy.png';
+  
+};
+
+load();
+
+
+
 // define player
-const playerColor = 'rgba(3,169,244,1)';
-const playerColorInitial = 'rgba(3,169,244,0.3)';
 const playerInitialYPosition = canvasHeight / 2 - playerSize / 2;
 let player;
 
@@ -102,7 +117,7 @@ const createFreshPlayer = () => {
     isUpArrowDown: false,
     isRightArrowDown: false,
     isDownArrowDown: false,
-    color: playerColorInitial,
+    image: sprites.playerSteady,
   };
 };
 
@@ -117,7 +132,7 @@ const getRandomNumber = (min, max) => {
 };
 
 const craeteFreshGoals = () => {  
-  const possibleColors = ['green', 'black', 'pink', 'brown'];
+  const possibleColors = ['green', 'black', 'pink'];
   
   const x = round % 2 === 1 ? 
     canvasWidth - goalSize - minDistanceFromEdge :
@@ -157,7 +172,7 @@ const createFreshEnemiesVertical = () => {
   for (let j = 0; j < totalEnemies; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
     possibleSpeeds.push(minEnemySpeed + j *
-     (maxEnemySpeed-minEnemySpeed)/(totalEnemies-1) || 1);
+     (maxEnemySpeed-minEnemySpeed)/((totalEnemies-1) || 1));
   }
   
   const distBetweenEnemies = canvasWidth / (totalEnemies+1);
@@ -192,7 +207,7 @@ const createFreshEnemiesHorizontal = () => {
   for (let j = 0; j < totalEnemies; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
     possibleSpeeds.push(minEnemySpeed + j *
-     (maxEnemySpeed-minEnemySpeed)/(totalEnemies-1) || 1);
+     (maxEnemySpeed-minEnemySpeed)/((totalEnemies-1) || 1));
   }
   
   const distBetweenEnemies = canvasHeight / (totalEnemies+1);
@@ -230,9 +245,8 @@ drawBackground();
 
 // player draw and movement
 const drawPlayer = () => {
-  const { x, y, w, h, color } = player;
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+  const { x, y, w, h, image } = player;
+  ctx.drawImage(image, x, y, w, h);
 };
 
 const updatePlayer = () => {
@@ -289,9 +303,8 @@ const updateGoal = (goal) => {
 
 // enemy draw and movement
 const drawEnemy = (enemy) => {
-  const { x, y, w, h, color } = enemy;
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+  const { x, y, w, h } = enemy;
+  ctx.drawImage(sprites.enemy, x, y, w, h);
 };
 
 const updateEnemy = (enemy) => {
@@ -330,7 +343,7 @@ const checkCollision = (player, rect) => {
 const movePlayer = e => {
   if (!player.isUpdated && isGameLive) {
     player.doneFirstMove = true;
-    player.color = playerColor;
+    player.image = sprites.player;
     player.isUpdated = true;
   }
   
@@ -403,7 +416,7 @@ const touchDirectionMove = {
 const processTouchStart = e => {
   if (!player.isUpdated && isGameLive) {
     player.doneFirstMove = true;
-    player.color = playerColor;
+    player.color = sprites.player;
     player.isUpdated = true;
   }
   [touchDirectionStart.x, touchDirectionStart.y] = 
@@ -496,6 +509,9 @@ const finishAfterCollision = (msg) => {
 const playGame = () => {  
   drawBackground();
   drawPlayer();
+  // break up draw and update player
+  // to better show the alignment of collision
+  updatePlayer();
   
   for (let i = 0; i < totalGoals; i++) {
     drawGoal(goals[i]);
@@ -525,10 +541,6 @@ const playGame = () => {
     updateEnemy(enemiesVertical[i]);
     updateEnemy(enemiesHorizontal[i]);
   }
-  
-  // break up draw and update player
-  // to better show the alignment of collision
-  updatePlayer();
 };
 
 
@@ -575,3 +587,4 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
+
