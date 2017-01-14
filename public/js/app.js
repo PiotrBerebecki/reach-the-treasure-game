@@ -25,6 +25,12 @@ let enemyTotal = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
 
+const displayRound = (round) => {
+  console.log('Round', round);
+};
+
+displayRound(round);
+
 const nextRound = () => {
   
   // temporarily prevent player from moving
@@ -39,7 +45,7 @@ const nextRound = () => {
   }, 1000);
   
   round += 1;
-  console.log('Round', round);
+  displayRound(round);
   enemyTotal = round;
   minEnemySpeed *= 0.95;
   maxEnemySpeed *= 0.95;
