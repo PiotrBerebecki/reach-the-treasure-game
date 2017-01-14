@@ -25,15 +25,27 @@ let enemyTotal = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
 
-const nextRound = (playerX, playerY) => {
+const nextRound = () => {
+  
+  // temporarily prevent player from moving
+  // after reaching the goal
+  window.removeEventListener('keydown', movePlayer);
+  document.removeEventListener('touchstart', processTouchStart);
+  document.removeEventListener('touchmove', processTouchMove);
+  setTimeout(() => {
+    window.addEventListener('keydown', movePlayer);
+    document.addEventListener('touchstart', processTouchStart);
+    document.addEventListener('touchmove', processTouchMove);
+  }, 1000);
+  
   round += 1;
   console.log('Round', round);
   enemyTotal = round;
-  minEnemySpeed *= 0.91;
-  maxEnemySpeed *= 0.91;
+  minEnemySpeed *= 0.95;
+  maxEnemySpeed *= 0.95;
   
   cancelAnimation();
-  createFreshPlayer(playerX, playerY);
+  createFreshPlayer();
   craeteFreshGoal();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
@@ -61,10 +73,15 @@ const playerColorInitial = 'rgba(3,169,244,0.3)';
 const playerInitialYPosition = canvasHeight / 2 - playerSize / 2;
 let player;
 
-const createFreshPlayer = (x = minDistanceFromEdge, y = playerInitialYPosition) => {
+const createFreshPlayer = () => {
+  
+  const x = round % 2 === 1 ? 
+        minDistanceFromEdge :
+        canvasWidth - goalSize - minDistanceFromEdge;
+  
   player = {
     x: x,
-    y: y,
+    y: playerInitialYPosition,
     w: playerSize,
     h: playerSize,
     speed: 2,
@@ -460,9 +477,9 @@ const playGame = () => {
   requestId = window.requestAnimationFrame(playGame);
   
   if (checkCollision(player, goal)) {
-    return nextRound(player.x, player.y);
+    return nextRound();
   }
-
+  
   for (let i = 0; i < enemyTotal; i++) {
     drawEnemy(enemiesVertical[i]);
     drawEnemy(enemiesHorizontal[i]);
