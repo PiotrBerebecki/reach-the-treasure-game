@@ -21,9 +21,11 @@ const canvasColor = 'white';
 
 // define game variables
 let round = 1;
-let enemyTotal = round;
+let totalEnemies = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
+const totalGoals = 3;
+let goalSpeed = 0.5;
 
 const displayRound = (round) => {
   console.log('Round', round);
@@ -46,13 +48,14 @@ const nextRound = () => {
   
   round += 1;
   displayRound(round);
-  enemyTotal = round;
+  totalEnemies = round;
   minEnemySpeed *= 0.95;
   maxEnemySpeed *= 0.95;
+  goalSpeed *= 0.98;
   
   cancelAnimation();
   createFreshPlayer();
-  craeteFreshGoal();
+  craeteFreshGoals();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
   playGame();
@@ -107,63 +110,66 @@ createFreshPlayer();
 
 
 // define goal
-const goalColor = '#4CAF50';
-
-const goalInitialYPosition = canvasHeight / 2 - goalSize / 2;
-let goal;
-
-const craeteFreshGoal = () => {  
-  const x = round % 2 === 1 ? 
-    canvasWidth - goalSize - minDistanceFromEdge :
-    minDistanceFromEdge;
-  
-  goal = {
-    x: x,
-    y: goalInitialYPosition,
-    w: goalSize,
-    h: goalSize,
-    color: goalColor
-  };
-};
-
-craeteFreshGoal();
-
-
-// define enemies
-const enemyColor = 'tomato';
+let goals = [];
 
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
-const randomiseEnemyPosition = (enemyDimension, canvasDimension) => {
-  return getRandomNumber(enemyDimension, canvasDimension - enemyDimension * 2);
+const craeteFreshGoals = () => {  
+  const possibleColors = ['green', 'black', 'pink', 'brown'];
+  
+  const x = round % 2 === 1 ? 
+    canvasWidth - goalSize - minDistanceFromEdge :
+    minDistanceFromEdge;
+  
+  const distBetweenGoals = canvasHeight/2 / (totalGoals+1);
+  
+  for (let i = 0; i < totalGoals; i++) {
+    let goal = {
+      x: x,
+      y: (distBetweenGoals + i*distBetweenGoals*3) - goalSize/2,
+      w: goalSize,
+      h: goalSize,
+      speedY: goalSpeed * (Math.random() >= 0.5 ? 1 : -1),
+      color: possibleColors[i]
+    };
+    goals[i] = goal;
+  }
+};
+
+craeteFreshGoals();
+
+
+// define enemies
+const enemyColor = 'tomato';
+
+const randomisePosition = (pawnSize, canvasDimension) => {
+  return getRandomNumber(pawnSize, canvasDimension - pawnSize * 2);
 };
 
 // vertical enemies
-let enemiesVertical;
+let enemiesVertical = [];
 
 const createFreshEnemiesVertical = () => {
-  enemiesVertical = [];
   let possibleSpeeds = [];
-  const distBetweenEnemies = canvasWidth / (enemyTotal+1);
   
-  for (let j = 0; j < enemyTotal; j++) {
+  for (let j = 0; j < totalEnemies; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
     possibleSpeeds.push(minEnemySpeed + j *
-     (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
+     (maxEnemySpeed-minEnemySpeed)/(totalEnemies-1) || 1);
   }
   
-  // console.log(possibleSpeeds[possibleSpeeds.length-1]);
+  const distBetweenEnemies = canvasWidth / (totalEnemies+1);
     
-  for (let i = 0; i < enemyTotal; i++) {
+  for (let i = 0; i < totalEnemies; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
       x: (distBetweenEnemies + i*distBetweenEnemies) - enemySize/2,
-      y: randomiseEnemyPosition(enemySize, canvasHeight),
+      y: randomisePosition(enemySize, canvasHeight),
       w: enemySize,
       h: enemySize,
       speedX: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
@@ -178,26 +184,26 @@ createFreshEnemiesVertical();
 
 
 // horizontal enemies
-let enemiesHorizontal;
+let enemiesHorizontal = [];
 
 const createFreshEnemiesHorizontal = () => {
-  enemiesHorizontal = [];
   let possibleSpeeds = [];
-  const distBetweenEnemies = canvasHeight / (enemyTotal+1);
   
-  for (let j = 0; j < enemyTotal; j++) {
+  for (let j = 0; j < totalEnemies; j++) {
     // include || 1 to avoid dividing by 0 if only 1 enemy
     possibleSpeeds.push(minEnemySpeed + j *
-     (maxEnemySpeed-minEnemySpeed)/(enemyTotal-1) || 1);
+     (maxEnemySpeed-minEnemySpeed)/(totalEnemies-1) || 1);
   }
   
-  for (let i = 0; i < enemyTotal; i++) {
+  const distBetweenEnemies = canvasHeight / (totalEnemies+1);
+  
+  for (let i = 0; i < totalEnemies; i++) {
     
     let randomSpeedIndex = getRandomNumber(0, possibleSpeeds.length-1);
     let enemySpeed = possibleSpeeds.splice(randomSpeedIndex, 1)[0];
     
     let enemy = {
-      x: randomiseEnemyPosition(enemySize, canvasWidth),
+      x: randomisePosition(enemySize, canvasWidth),
       y: (distBetweenEnemies + i*distBetweenEnemies) - enemySize/2,
       w: enemySize,
       h: enemySize,
@@ -261,11 +267,23 @@ const updatePlayer = () => {
 };
 
 
-// goal draw
-const drawGoal = () => {
+// goal draw and movement
+const drawGoal = (goal) => {
   const { x, y, w, h, color } = goal;
   ctx.fillStyle = color;
   ctx.fillRect(x, y, w, h);
+};
+
+const updateGoal = (goal) => {
+  const { y, h, speedY } = goal;
+  
+  if (y >= canvasHeight - h) {
+    goal.speedY = -speedY;
+  } else if (y <= 0) {
+    goal.speedY = -speedY;
+  }
+  
+  goal.y += goal.speedY;   
 };
 
 
@@ -470,7 +488,7 @@ const finishAfterCollision = (msg) => {
   isGameLive = false;
   cancelAnimation();
   createFreshPlayer();
-  craeteFreshGoal();
+  craeteFreshGoals();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
 };
@@ -478,15 +496,20 @@ const finishAfterCollision = (msg) => {
 const playGame = () => {  
   drawBackground();
   drawPlayer();
-  drawGoal();
+  
+  for (let i = 0; i < totalGoals; i++) {
+    drawGoal(goals[i]);
+    
+    if (checkCollision(player, goals[i])) {
+      return nextRound();
+    }
+    
+    updateGoal(goals[i]);
+  }
   
   requestId = window.requestAnimationFrame(playGame);
   
-  if (checkCollision(player, goal)) {
-    return nextRound();
-  }
-  
-  for (let i = 0; i < enemyTotal; i++) {
+  for (let i = 0; i < totalEnemies; i++) {
     drawEnemy(enemiesVertical[i]);
     drawEnemy(enemiesHorizontal[i]);
     
@@ -527,7 +550,7 @@ const startGame = () => {
     clearCanvas();
     drawBackground();
     createFreshPlayer();
-    craeteFreshGoal();
+    craeteFreshGoals();
     createFreshEnemiesVertical();
     createFreshEnemiesHorizontal();
   }  
