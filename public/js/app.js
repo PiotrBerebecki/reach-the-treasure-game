@@ -84,6 +84,9 @@ const load = () => {
     sprites[`goal0${i}`] = new Image();
     sprites[`goal0${i}`].src = `./public/images/goal-0${i}.png`;
   }
+  
+  sprites.background = new Image();
+  sprites.background.src = './public/images/background.jpg';
 };
 
 load();
@@ -231,8 +234,7 @@ createFreshEnemiesHorizontal();
 
 // canvas draw
 const drawBackground = () => {
-  ctx.fillStyle = canvasColor;
-  ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+  ctx.drawImage(sprites.background, 0, 0, canvasWidth, canvasHeight);
 };
 
 drawBackground();
