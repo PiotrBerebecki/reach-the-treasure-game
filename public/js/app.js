@@ -10,7 +10,7 @@ const canvasColor = 'white';
 
 
 // define game variables
-let round = 4;
+let round = 1;
 let totalEnemies = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
@@ -80,6 +80,10 @@ const load = () => {
   sprites.enemy = new Image();
   sprites.enemy.src = './public/images/enemy.png';
   
+  for (let i = 0; i < totalGoals; i++) {
+    sprites[`goal0${i}`] = new Image();
+    sprites[`goal0${i}`].src = `./public/images/goal-0${i}.png`;
+  }
 };
 
 load();
@@ -125,8 +129,6 @@ const getRandomNumber = (min, max) => {
 };
 
 const craeteFreshGoals = () => {  
-  const possibleColors = ['green', 'black', 'pink'];
-  
   const x = round % 2 === 1 ? 
     canvasWidth - goalSize - minDistanceFromEdge :
     minDistanceFromEdge;
@@ -140,7 +142,7 @@ const craeteFreshGoals = () => {
       w: goalSize,
       h: goalSize,
       speedY: goalSpeed * (Math.random() >= 0.5 ? 1 : -1),
-      color: possibleColors[i]
+      image: sprites[`goal0${i}`]
     };
     goals[i] = goal;
   }
@@ -276,9 +278,8 @@ const updatePlayer = () => {
 
 // goal draw and movement
 const drawGoal = (goal) => {
-  const { x, y, w, h, color } = goal;
-  ctx.fillStyle = color;
-  ctx.fillRect(x, y, w, h);
+  const { x, y, w, h, image } = goal;
+  ctx.drawImage(image, x, y, w, h);
 };
 
 const updateGoal = (goal) => {
