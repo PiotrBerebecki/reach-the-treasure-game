@@ -488,13 +488,16 @@ const cancelAnimation = () => {
   requestId = undefined;
 };
 
-const finishAfterCollision = (msg) => {
-  console.log(msg);
+const finishAfterCollision = (successfulEnemy) => {
+  console.log('You lost');
+  isGameLive = false;
   startButton.textContent = 'Restart';
+  cancelAnimation();
+  
   player.image = sprites.playerUnhappy;
   drawPlayer();
-  isGameLive = false;
-  cancelAnimation();
+  
+  drawEnemy(successfulEnemy);  
 };
 
 const playGame = () => {  
@@ -520,14 +523,16 @@ const playGame = () => {
     
     if (player.doneFirstMove) {
       if (checkCollision(player, enemiesVertical[i])) {
-        finishAfterCollision('you lost');
+        finishAfterCollision(enemiesVertical[i]);
       }
       
       if (checkCollision(player, enemiesHorizontal[i])) {
-        finishAfterCollision('you lost');
+        finishAfterCollision(enemiesHorizontal[i]);
       }
+      
+      
     }
-    
+        
     updateEnemy(enemiesVertical[i]);
     updateEnemy(enemiesHorizontal[i]);
   }
