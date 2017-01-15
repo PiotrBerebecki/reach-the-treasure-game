@@ -84,6 +84,9 @@ const load = () => {
   sprites.playerInvisible = new Image();
   sprites.playerInvisible.src = './public/images/player-invisible.png';
   
+  sprites.playerUnhappy = new Image();
+  sprites.playerUnhappy.src = './public/images/player-unhappy.png';
+  
   sprites.enemy = new Image();
   sprites.enemy.src = './public/images/enemy.png';
   
@@ -498,6 +501,7 @@ const cancelAnimation = () => {
 const finishAfterCollision = (msg) => {
   console.log(msg);
   startButton.textContent = 'Restart';
+  player.image = sprites.playerUnhappy;
   isGameLive = false;
   cancelAnimation();
 };
