@@ -78,11 +78,11 @@ setPawnSize(20);
 // load all images
 const sprites = {};
 const load = () => {
-  sprites.player = new Image();
-  sprites.player.src = './public/images/player.png';
+  sprites.playerHappy = new Image();
+  sprites.playerHappy.src = './public/images/player-happy.png';
   
-  sprites.playerSteady = new Image();
-  sprites.playerSteady.src = './public/images/player-steady.png';
+  sprites.playerInvisible = new Image();
+  sprites.playerInvisible.src = './public/images/player-invisible.png';
   
   sprites.enemy = new Image();
   sprites.enemy.src = './public/images/enemy.png';
@@ -117,7 +117,7 @@ const createFreshPlayer = () => {
     isUpArrowDown: false,
     isRightArrowDown: false,
     isDownArrowDown: false,
-    image: sprites.playerSteady,
+    image: sprites.playerInvisible,
   };
 };
 
@@ -343,7 +343,7 @@ const checkCollision = (player, rect) => {
 const movePlayer = e => {
   if (!player.isUpdated && isGameLive) {
     player.doneFirstMove = true;
-    player.image = sprites.player;
+    player.image = sprites.playerHappy;
     player.isUpdated = true;
   }
   
@@ -416,7 +416,7 @@ const touchDirectionMove = {
 const processTouchStart = e => {
   if (!player.isUpdated && isGameLive) {
     player.doneFirstMove = true;
-    player.color = sprites.player;
+    player.image = sprites.playerHappy;
     player.isUpdated = true;
   }
   [touchDirectionStart.x, touchDirectionStart.y] = 
