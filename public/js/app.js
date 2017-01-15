@@ -1,16 +1,6 @@
 console.clear();
 
 
-// show deployment time
-const now = new Date();
-const nowTime = now.toLocaleTimeString('en-GB', { hour12: false });
-const nowDate = now.toLocaleDateString();
-
-const titleEl = document.querySelector('h4');
-titleEl.textContent = `${titleEl.textContent} - ${nowDate} ${nowTime}`;
-
-
-
 // define canvas
 const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
@@ -502,6 +492,7 @@ const finishAfterCollision = (msg) => {
   console.log(msg);
   startButton.textContent = 'Restart';
   player.image = sprites.playerUnhappy;
+  drawPlayer();
   isGameLive = false;
   cancelAnimation();
 };
