@@ -579,7 +579,9 @@ const pauseGame = () => {
   if (isGamePaused) {
     window.cancelAnimationFrame(requestId);
     requestId = undefined;
+    pauseButton.textContent = 'Resume';
   } else {
+    pauseButton.textContent = 'Pause';
     playGame();
   }
 };
