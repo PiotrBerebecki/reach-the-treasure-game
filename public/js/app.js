@@ -287,9 +287,9 @@ const drawGoal = (goal) => {
 const updateGoal = (goal) => {
   const { y, h, speedY } = goal;
   
-  if (y >= canvasHeight - h) {
+  if (y >= canvasHeight - h - minDistanceFromEdge) {
     goal.speedY = -speedY;
-  } else if (y <= 0) {
+  } else if (y <= minDistanceFromEdge) {
     goal.speedY = -speedY;
   }
   
@@ -306,17 +306,17 @@ const drawEnemy = (enemy) => {
 const updateEnemy = (enemy) => {
   const { x, y, w, h, speedX, speedY } = enemy;
   
-  if (y >= canvasHeight - h) {
+  if (y >= canvasHeight - h - minDistanceFromEdge) {
     enemy.speedY = -speedY;
-  } else if (y <= 0) {
+  } else if (y <= minDistanceFromEdge) {
     enemy.speedY = -speedY;
   }
   
   enemy.y += enemy.speedY;  
 
-  if (x >= canvasWidth - w) {
+  if (x >= canvasWidth - w - minDistanceFromEdge) {
     enemy.speedX = -speedX;
-  } else if (x <= 0) {
+  } else if (x <= minDistanceFromEdge) {
     enemy.speedX = -speedX;
   }
   
