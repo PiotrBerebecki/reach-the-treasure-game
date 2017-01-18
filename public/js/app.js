@@ -327,12 +327,22 @@ const updateEnemy = (enemy) => {
 
 
 
-// detect collision between player and enemy
+// detect collision between player and goal
 const checkCollision = (player, rect) => {
   const isCollision = player.x + player.w >= rect.x &&
                       rect.x + rect.w >= player.x &&
                       player.y + player.h >= rect.y &&
                       rect.y + rect.h >= player.y;
+  return isCollision;
+};
+
+
+// detect collision between player and enemy
+const checkCollisionEnemy = (player, rect) => {
+  const isCollision = player.x + player.w >= rect.x + 1.5 &&
+                      rect.x + rect.w >= player.x + 1.5 &&
+                      player.y + player.h >= rect.y + 1.5 &&
+                      rect.y + rect.h >= player.y + 1.5;
   return isCollision;
 };
 
@@ -523,22 +533,28 @@ const playGame = () => {
     drawEnemy(enemiesHorizontal[i]);
     
     if (player.doneFirstMove) {
-      if (checkCollision(player, enemiesVertical[i])) {
+      if (checkCollisionEnemy(player, enemiesVertical[i])) {
         drawBackground();
         
         for (let j = 0; j < totalEnemies; j++) {
-          drawEnemy(enemiesVertical[j]);
           drawEnemy(enemiesHorizontal[j]);
+          if (j === i) {
+            continue;
+          }
+          drawEnemy(enemiesVertical[j]);
         }
         
         return finishAfterCollision(enemiesVertical[i]);
       }
       
-      if (checkCollision(player, enemiesHorizontal[i])) {
+      if (checkCollisionEnemy(player, enemiesHorizontal[i])) {
         drawBackground();
         
         for (let j = 0; j < totalEnemies; j++) {
           drawEnemy(enemiesVertical[j]);
+          if (j === i) {
+            continue;
+          }
           drawEnemy(enemiesHorizontal[j]);
         }
         
