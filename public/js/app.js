@@ -2,7 +2,7 @@ console.clear();
 
 
 // define canvas
-const canvas = document.getElementById('canvas');
+const canvas = document.getElementById('display__canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;

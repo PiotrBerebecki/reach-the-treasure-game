@@ -44,10 +44,31 @@ h4 {
   text-align: center;
 }
 
-#canvas {
-  width: 100%;
-  /*border: solid 1px black;*/
+#display {
+  position: relative;
+  border: solid 1px green;
 }
+
+#display__challenge {
+  position: absolute;
+  top: 5%;
+  left: 50%;
+  transform: translateX(-50%);
+  padding: 0.5em;
+  /*border: solid 1px red;*/
+  background: rgba(255,255,255,0.4);
+  color: black;
+}
+
+#display__canvas {
+  display: block;
+  width: 100%;
+  border: solid 1px black;
+}
+
+
+
+
 
 button {
   width: 5em;
