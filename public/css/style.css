@@ -108,7 +108,43 @@ body {
   width: 100%;
 }
 
-button {
-  width: 5em;
-  cursor: pointer;
+#controls {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 0.5rem;
+  width: 100%;
+}
+
+
+.button {
+  width: 48%;
+  padding-top: 0.6rem;
+  padding-bottom: 0.6rem;
+  padding-left: 0.8rem;
+  padding-right: 0.8rem;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 2px;
+  font-size: 0.85rem;
+  font-weight: bold;
+  text-align: center;
+  -webkit-tap-highlight-color: transparent; /* disable blue highlight on webkit touch browser */
+}
+
+.button:active {
+  background: rgba(255, 255, 255, 0.30);
+}
+
+.non-touch {
+  transition: background 200ms ease-out;
+  cursor: pointer; /* Only apply to non-touch devices to prevent blue highlight on touch devices */
+}
+
+.non-touch:hover {
+  background: rgba(255, 255, 255, 0.35);
+  transition: background 200ms ease-out;
+}
+
+.non-touch:active {
+  background: rgba(255, 255, 255, 0.25);
+  transition: background 0ms ease-out;
 }

@@ -31,6 +31,7 @@ let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
+const playerSpeed = 5;
 
 const minMathChallenge = 1;
 const maxMathChallenge = 12;
@@ -208,7 +209,7 @@ const createFreshPlayer = () => {
     y: playerInitialYPosition,
     w: playerSize,
     h: playerSize,
-    speed: 2,
+    speed: playerSpeed,
     isMoving: false,
     doneFirstMove: false,
     isUpdated: false,
@@ -370,6 +371,12 @@ const updatePlayer = () => {
 const drawGoal = (goal) => {
   const { x, y, w, h, image } = goal;
   ctx.drawImage(image, x, y, w, h);
+};
+
+const drawAllGoals = () => {
+  goals.forEach(goal => {
+    drawGoal(goal);
+  });
 };
 
 const updateGoal = (goal) => {
@@ -592,7 +599,6 @@ const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   isGameLive = false;
   startButton.textContent = 'Try again';
   cancelAnimation();
-  
   drawBackground();
   
   if (successfulEnemy.type === 'vertical') {
@@ -613,32 +619,35 @@ const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
 
   player.image = sprites.playerUnhappy;
   drawPlayer();
-  
   drawEnemy(successfulEnemy);
-  
-  goals.forEach(goal => {
-    drawGoal(goal);
-  });
+  drawAllGoals();
 };
 
 const finishAfterCollisionGoal = (goal, result) => {
   isGameLive = false;
-  
   cancelAnimation();
+  drawBackground();
   
   if (result === 'correct') {
-    console.log('correct');
+    console.log('Correct');
+    startButton.removeEventListener('click', startGame);
     setTimeout(() => {
+      startButton.addEventListener('click', startGame);
       nextRound();
     }, 2000);
   } else {
-    startButton.textContent = 'Restart';
+    console.log('Wrong');
+    startButton.textContent = 'Try again';
     player.image = sprites.playerUnhappy;
   }
 
   drawPlayer();
+  drawAllGoals();
   
-  drawGoal(goal);
+  enemiesVertical.forEach((enemy, index) => {
+    drawEnemy(enemy);
+    drawEnemy(enemiesHorizontal[index]);
+  });
 };
 
 
@@ -697,11 +706,11 @@ const startGame = () => {
   createFreshEnemiesHorizontal();
   
   if (isGameLive) {
-    startButton.textContent = 'Stop';
+    startButton.textContent = 'Restart this round';
     showNextChallenge();
     playGame();
   } else {
-    startButton.textContent = 'Start';
+    startButton.textContent = 'Begin the treasure hunt';
     isGamePaused = false;
     cancelAnimation();
     drawBackground();
@@ -731,6 +740,23 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
+
+
+// Adjust styling for touch devices
+(function adjustTouch() {
+  // Test if the user's device supports touch
+  const isTouch =  !!('ontouchstart' in window) || 
+                    window.navigator.msMaxTouchPoints > 0;
+  // Add CSS classes only for non-touch devices. 
+  // This prevents touch devices from having 
+  // buttons stuck in the CSS hover state.
+  if (!isTouch) {
+    const buttonDOM = document.querySelectorAll('.button');
+    buttonDOM.forEach(button => {
+      button.classList.add('non-touch');
+    });
+  }
+}());
 
 
 gameInit();
