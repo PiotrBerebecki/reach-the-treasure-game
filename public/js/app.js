@@ -6,9 +6,12 @@ const canvas = document.getElementById('display__canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-const canvasBottomLimit = Math.round(canvasHeight * 0.4417);
+const canvasBottomLimit = Math.round(canvasHeight * 0.313);
 const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 // console.log(canvasBottomLimit, canvasPlayableHeight);
+
+
+
 
 
 // define game variables
@@ -66,7 +69,6 @@ const setPawnSize = (size) => {
 setPawnSize(20);
 
 
-
 // load all images
 const sprites = {};
 const load = () => {
@@ -93,6 +95,45 @@ const load = () => {
 
 load();
 
+
+// Helpers
+const getRandomNumber = (min, max) => {
+  return Math.floor(Math.random() * (max + 1 - min) + min);
+};
+
+
+// Generate Match challenge
+const getMathChallenge = () => {
+  return {
+    num00: 6,
+    num01: 8,
+    operator: 'x',
+    correct: 48,
+    answers: [52, 48, 46]
+  };
+};
+
+
+// display next challenge
+const num00DOM = document.getElementById('num-00');
+const num01DOM = document.getElementById('num-01');
+const operatorDOM = document.getElementById('operator');
+const answersDOM = Array.from(document.getElementsByClassName('answer-text'));
+// console.log(num00DOM, num01DOM, operatorDOM, answersDOM);
+
+
+const displayMathChallenge = () => {
+  const { num00, num01, operator, answers } = getMathChallenge();
+  
+  num00DOM.textContent = num00;
+  num01DOM.textContent = num01;
+  operatorDOM.textContent = operator;
+  answersDOM.forEach((option, index) => {
+    option.textContent = answers[index];
+  });
+};
+
+displayMathChallenge();
 
 
 // define player
@@ -128,10 +169,6 @@ createFreshPlayer();
 
 // define goal
 let goals = [];
-
-const getRandomNumber = (min, max) => {
-  return Math.floor(Math.random() * (max + 1 - min) + min);
-};
 
 const createFreshGoals = () => {  
   const x = round % 2 === 1 ? 
@@ -236,10 +273,14 @@ createFreshEnemiesHorizontal();
 
 // canvas draw
 const drawBackground = () => {
+  console.log(sprites.background, canvasWidth, canvasHeight)
   ctx.drawImage(sprites.background, 0, 0, canvasWidth, canvasHeight);
 };
 
-drawBackground();
+// setTimeout(() => {
+  drawBackground();
+// }, 0);
+
 
 
 // player draw and movement
@@ -615,4 +656,3 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
-

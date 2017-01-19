@@ -47,11 +47,11 @@ body {
 
 #display__challenge {
   position: absolute;
-  top: 4%;
+  top: 2%;
   left: 50%;
   transform: translateX(-50%);
   width: 60%;
-  padding: 0.5em;
+  padding: 0.5rem;
   border-radius: 3px;
   background: rgba(255,255,255,0.4);
   color: rgba(0,0,0,0.8);
@@ -61,7 +61,7 @@ body {
 
 @media screen and (min-width: 601px) {
   #display__challenge {
-    top: 8%;
+    top: 3%;
     width: 55%;
   }
 }
@@ -77,7 +77,7 @@ body {
   text-align: center;
 }
 
-#number-first, #number-second {
+#num-00, #num-01 {
   display: inline-block;
   width: 1.5rem;
   font-weight: bold;
