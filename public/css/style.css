@@ -127,7 +127,9 @@ body {
   font-size: 0.85rem;
   font-weight: bold;
   text-align: center;
-  -webkit-tap-highlight-color: transparent; /* disable blue highlight on webkit touch browser */
+  /* Disable blue highlight on webkit touch browser */
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  -webkit-tap-highlight-color: transparent;
 }
 
 .button:active {
@@ -136,7 +138,8 @@ body {
 
 .non-touch {
   transition: background 200ms ease-out;
-  cursor: pointer; /* Only apply to non-touch devices to prevent blue highlight on touch devices */
+  /* Only apply to non-touch devices to prevent blue highlight on touch devices */
+  cursor: pointer; 
 }
 
 .non-touch:hover {

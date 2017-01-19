@@ -31,7 +31,7 @@ let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
-const playerSpeed = 5;
+const playerSpeed = 1;
 
 const minMathChallenge = 1;
 const maxMathChallenge = 12;
@@ -597,7 +597,7 @@ const cancelAnimation = () => {
 const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   console.log('You lost');
   isGameLive = false;
-  startButton.textContent = 'Try again';
+  startButton.textContent = 'Restart this round';
   cancelAnimation();
   drawBackground();
   
@@ -637,7 +637,7 @@ const finishAfterCollisionGoal = (goal, result) => {
     }, 2000);
   } else {
     console.log('Wrong');
-    startButton.textContent = 'Try again';
+    startButton.textContent = 'Restart this round';
     player.image = sprites.playerUnhappy;
   }
 
