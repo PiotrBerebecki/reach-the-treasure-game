@@ -1,6 +1,17 @@
 console.clear();
 
 
+// invoked at the bottom
+const gameInit = () => {
+  loadSprites();
+  setPawnSize(20);
+  getPlayerInitialYPosition();
+  createFreshPlayer(); // to avoid issue with 
+  displayRound(round);
+};
+
+
+
 // define canvas
 const canvas = document.getElementById('display__canvas');
 const ctx = canvas.getContext('2d');
@@ -8,14 +19,11 @@ const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
 const canvasBottomLimit = Math.round(canvasHeight * 0.313);
 const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
-// console.log(canvasBottomLimit, canvasPlayableHeight);
-
-
 
 
 
 // define game variables
-let round = 5;
+let round = 1;
 let totalEnemies = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
@@ -26,7 +34,6 @@ const displayRound = (round) => {
   console.log('Round', round);
 };
 
-displayRound(round);
 
 const nextRound = () => {
   // temporarily prevent player from moving
@@ -66,12 +73,12 @@ const setPawnSize = (size) => {
   goalSize = size;
   enemySize = size;
 };
-setPawnSize(20);
+
 
 
 // load all images
 const sprites = {};
-const load = () => {
+const loadSprites = () => {
   sprites.playerHappy = new Image();
   sprites.playerHappy.src = './public/images/player-happy.png';
   
@@ -90,19 +97,20 @@ const load = () => {
   }
   
   sprites.background = new Image();
+  sprites.background.onload = () => drawBackground();
   sprites.background.src = './public/images/background.jpg';
 };
 
-load();
 
 
-// Helpers
+// helpers
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
 
-// Generate Match challenge
+
+// generate math challenge
 const getMathChallenge = () => {
   return {
     num00: 6,
@@ -122,7 +130,7 @@ const answersDOM = Array.from(document.getElementsByClassName('answer-text'));
 // console.log(num00DOM, num01DOM, operatorDOM, answersDOM);
 
 
-const displayMathChallenge = () => {
+const generateMathChallenge = () => {
   const { num00, num01, operator, answers } = getMathChallenge();
   
   num00DOM.textContent = num00;
@@ -133,15 +141,25 @@ const displayMathChallenge = () => {
   });
 };
 
-displayMathChallenge();
+
+const challengeDOM = document.getElementById('display__challenge');
+
+const toggleMathChallenge = () => {
+  challengeDOM.style.display = isGameLive ? 'block' : 'none';
+};
+
 
 
 // define player
-const playerInitialYPosition = canvasBottomLimit + canvasPlayableHeight / 2 - playerSize / 2;
 let player;
+let playerInitialYPosition;
+
+const getPlayerInitialYPosition = () => {
+  playerInitialYPosition = canvasBottomLimit + canvasPlayableHeight / 2 - playerSize / 2;
+};
+
 
 const createFreshPlayer = () => {
-  
   const x = round % 2 === 1 ? 
         minDistanceFromEdge :
         canvasWidth - goalSize - minDistanceFromEdge;
@@ -164,7 +182,7 @@ const createFreshPlayer = () => {
   };
 };
 
-createFreshPlayer();
+
 
 
 // define goal
@@ -190,12 +208,8 @@ const createFreshGoals = () => {
   }
 };
 
-createFreshGoals();
-
 
 // define enemies
-const enemyColor = 'tomato';
-
 const randomisePosition = (pawnSize, canvasDimension) => {
   return getRandomNumber(pawnSize, canvasDimension - pawnSize * 2);
 };
@@ -225,14 +239,11 @@ const createFreshEnemiesVertical = () => {
       w: enemySize,
       h: enemySize,
       speedX: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
-      speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
-      color: enemyColor
+      speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1)
     };
     enemiesVertical[i] = enemy;
   }
 };
-
-createFreshEnemiesVertical();
 
 
 // horizontal enemies
@@ -260,27 +271,18 @@ const createFreshEnemiesHorizontal = () => {
       w: enemySize,
       h: enemySize,
       speedX: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
-      speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
-      color: enemyColor
+      speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1)
     };
     enemiesHorizontal[i] = enemy;
   }
 };
 
-createFreshEnemiesHorizontal();
 
 
-
-// canvas draw
+// background draw
 const drawBackground = () => {
-  console.log(sprites.background, canvasWidth, canvasHeight)
   ctx.drawImage(sprites.background, 0, 0, canvasWidth, canvasHeight);
 };
-
-// setTimeout(() => {
-  drawBackground();
-// }, 0);
-
 
 
 // player draw and movement
@@ -432,6 +434,8 @@ const stopPlayer = e => {
     case 40:
       player.isDownArrowDown = false;
       break;
+    default:
+      return;
   }
   
   // continue movement when one key is released 
@@ -616,23 +620,23 @@ let isGamePaused = false;
 const startGame = () => {
   isGameLive = !isGameLive;
   
+  createFreshPlayer();
+  createFreshGoals();
+  createFreshEnemiesVertical();
+  createFreshEnemiesHorizontal();
+  
+  toggleMathChallenge();
+  
   if (isGameLive) {
     startButton.textContent = 'Stop';
-    createFreshPlayer();
-    createFreshGoals();
-    createFreshEnemiesVertical();
-    createFreshEnemiesHorizontal();
+    generateMathChallenge();
     playGame();
   } else {
     startButton.textContent = 'Start';
     isGamePaused = false;
     cancelAnimation();
     drawBackground();
-    createFreshPlayer();
-    createFreshGoals();
-    createFreshEnemiesVertical();
-    createFreshEnemiesHorizontal();
-  }  
+  }
 };
 
 
@@ -656,3 +660,7 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
+
+
+
+gameInit();

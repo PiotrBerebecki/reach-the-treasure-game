@@ -50,6 +50,7 @@ body {
   top: 2%;
   left: 50%;
   transform: translateX(-50%);
+  display: none;
   width: 60%;
   padding: 0.5rem;
   border-radius: 3px;
