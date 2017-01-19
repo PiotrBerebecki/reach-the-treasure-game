@@ -6,7 +6,9 @@ const gameInit = () => {
   loadSprites();
   setPawnSize(20);
   getPlayerInitialYPosition();
-  createFreshPlayer(); // to avoid issue with 
+  // to avoid undefined player on 
+  // key presses/touches before start
+  createFreshPlayer();
   displayRound(round);
 };
 
@@ -49,7 +51,7 @@ const nextRound = () => {
     window.addEventListener('keydown', movePlayer);
     document.addEventListener('touchstart', processTouchStart);
     document.addEventListener('touchmove', processTouchMove);
-  }, 1000);
+  }, 200);
   
   round += 1;
   displayRound(round);
@@ -278,7 +280,8 @@ const createFreshEnemiesVertical = () => {
       w: enemySize,
       h: enemySize,
       speedX: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
-      speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1)
+      speedY: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
+      type: 'vertical'
     };
     enemiesVertical[i] = enemy;
   }
@@ -310,7 +313,8 @@ const createFreshEnemiesHorizontal = () => {
       w: enemySize,
       h: enemySize,
       speedX: enemySpeed    * (Math.random() >= 0.5 ? 1 : -1),
-      speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1)
+      speedY: enemySpeed/10 * (Math.random() >= 0.5 ? 1 : -1),
+      type: 'horizontal'
     };
     enemiesHorizontal[i] = enemy;
   }
@@ -583,16 +587,38 @@ const cancelAnimation = () => {
   requestId = undefined;
 };
 
-const finishAfterCollisionEnemy = (successfulEnemy) => {
+const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   console.log('You lost');
   isGameLive = false;
-  startButton.textContent = 'Restart';
+  startButton.textContent = 'Try again';
   cancelAnimation();
   
+  drawBackground();
+  
+  if (successfulEnemy.type === 'vertical') {
+    for (let j = 0; j < totalEnemies; j++) {
+      if (j !== indexOfSuccessfulEnemy) {
+        drawEnemy(enemiesVertical[j]);
+      }
+      drawEnemy(enemiesHorizontal[j]);
+    }
+  } else {
+    for (let j = 0; j < totalEnemies; j++) {
+      if (j !== indexOfSuccessfulEnemy) {
+        drawEnemy(enemiesHorizontal[j]);
+      }
+      drawEnemy(enemiesVertical[j]);
+    }
+  }
+
   player.image = sprites.playerUnhappy;
   drawPlayer();
   
   drawEnemy(successfulEnemy);
+  
+  goals.forEach(goal => {
+    drawGoal(goal);
+  });
 };
 
 const finishAfterCollisionGoal = (goal, result) => {
@@ -644,31 +670,11 @@ const playGame = () => {
     
     if (player.doneFirstMove) {
       if (checkCollisionEnemy(player, enemiesVertical[i])) {
-        drawBackground();
-        
-        for (let j = 0; j < totalEnemies; j++) {
-          drawEnemy(enemiesHorizontal[j]);
-          if (j === i) {
-            continue;
-          }
-          drawEnemy(enemiesVertical[j]);
-        }
-        
-        return finishAfterCollisionEnemy(enemiesVertical[i]);
+        return finishAfterCollisionEnemy(enemiesVertical[i], i);
       }
       
       if (checkCollisionEnemy(player, enemiesHorizontal[i])) {
-        drawBackground();
-        
-        for (let j = 0; j < totalEnemies; j++) {
-          drawEnemy(enemiesVertical[j]);
-          if (j === i) {
-            continue;
-          }
-          drawEnemy(enemiesHorizontal[j]);
-        }
-        
-        return finishAfterCollisionEnemy(enemiesHorizontal[i]);
+        return finishAfterCollisionEnemy(enemiesHorizontal[i], i);
       } 
     }
     updateEnemy(enemiesVertical[i]);
@@ -725,7 +731,6 @@ const pauseButton = document.getElementById('pause-button');
 
 startButton.addEventListener('click', startGame);
 pauseButton.addEventListener('click', pauseGame);
-
 
 
 gameInit();
