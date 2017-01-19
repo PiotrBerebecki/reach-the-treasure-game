@@ -30,6 +30,9 @@ let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
 
+const minMathChallenge = 1;
+const maxMathChallenge = 12;
+
 const displayRound = (round) => {
   console.log('Round', round);
 };
@@ -108,43 +111,72 @@ const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
 
+const shuffleArray = (array) => {
+  for (let i = array.length - 1; i > 0; i--) {
+    let j = Math.floor(Math.random() * (i + 1));
+    let temp = array[i];
+    array[i] = array[j];
+    array[j] = temp;
+  }
+  return array;
+};
 
 
-// generate math challenge
-const getMathChallenge = () => {
-  return {
-    num00: 6,
-    num01: 8,
-    operator: 'x',
-    correct: 48,
-    answers: [52, 48, 46]
-  };
+
+// math challenge
+const generateMathChallenge = () => {
+  
+  const num00 = getRandomNumber(minMathChallenge, maxMathChallenge);
+  const num01 = getRandomNumber(minMathChallenge, maxMathChallenge);
+  // const num00 = 1;
+  // const num01 = 1;
+  const correct = num00 * num01;
+  
+  let modifier1, modifier2;
+  
+  if (correct >= 5) {
+    modifier1 = Math.random() > 0.5 ? 2 : -2;
+    modifier2 = Math.random() > 0.5 ? 4 : -4;
+  } else {
+    modifier1 = 1;
+    modifier2 = 2;
+  }
+  
+  const answers = [correct, correct + modifier1, correct + modifier2];
+  
+  return { num00, num01, correct, answers };
 };
 
 
 // display next challenge
 const num00DOM = document.getElementById('num-00');
 const num01DOM = document.getElementById('num-01');
-const operatorDOM = document.getElementById('operator');
-const answersDOM = Array.from(document.getElementsByClassName('answer-text'));
-// console.log(num00DOM, num01DOM, operatorDOM, answersDOM);
+const answersTextDOM = Array.from(document.getElementsByClassName('answer-text'));
+const answersImageDOM = Array.from(document.getElementsByClassName('answer-image'));
 
+const getGoalLinks = () => shuffleArray([
+  'public/images/goal-00.png',
+  'public/images/goal-01.png',
+  'public/images/goal-02.png'
+]);
 
-const generateMathChallenge = () => {
-  const { num00, num01, operator, answers } = getMathChallenge();
+const showChallenge = () => {
+  const { num00, num01, correct, answers } = generateMathChallenge();
+  const goalLinks = getGoalLinks();
   
   num00DOM.textContent = num00;
   num01DOM.textContent = num01;
-  operatorDOM.textContent = operator;
-  answersDOM.forEach((option, index) => {
+  answersTextDOM.forEach((option, index) => {
     option.textContent = answers[index];
+    answersImageDOM[index].src = goalLinks[index];
   });
 };
 
 
+// toggle challenge on / off
 const challengeDOM = document.getElementById('display__challenge');
 
-const toggleMathChallenge = () => {
+const toggleChallenge = () => {
   challengeDOM.style.display = isGameLive ? 'block' : 'none';
 };
 
@@ -625,11 +657,9 @@ const startGame = () => {
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
   
-  toggleMathChallenge();
-  
   if (isGameLive) {
     startButton.textContent = 'Stop';
-    generateMathChallenge();
+    showChallenge();
     playGame();
   } else {
     startButton.textContent = 'Start';
@@ -637,6 +667,8 @@ const startGame = () => {
     cancelAnimation();
     drawBackground();
   }
+  
+  toggleChallenge();
 };
 
 
