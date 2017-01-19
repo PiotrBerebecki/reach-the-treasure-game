@@ -25,8 +25,8 @@ const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 // define game variables
 let round = 1;
 let totalEnemies = round;
-let minEnemySpeed = 0.1;
-let maxEnemySpeed = minEnemySpeed + 0.1;
+let minEnemySpeed = 1;
+let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
 
@@ -683,7 +683,6 @@ let isGamePaused = false;
 
 
 const startGame = () => {
-  console.clear();
   isGameLive = !isGameLive;
   
   createFreshPlayer();
