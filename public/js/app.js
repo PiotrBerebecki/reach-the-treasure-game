@@ -25,8 +25,8 @@ const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 // define game variables
 let round = 1;
 let totalEnemies = round;
-let minEnemySpeed = 1;
-let maxEnemySpeed = minEnemySpeed + 1;
+let minEnemySpeed = 0.1;
+let maxEnemySpeed = minEnemySpeed + 0.1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
 
@@ -44,6 +44,7 @@ const nextRound = () => {
   window.removeEventListener('keydown', movePlayer);
   document.removeEventListener('touchstart', processTouchStart);
   document.removeEventListener('touchmove', processTouchMove);
+  
   setTimeout(() => {
     window.addEventListener('keydown', movePlayer);
     document.addEventListener('touchstart', processTouchStart);
@@ -62,6 +63,9 @@ const nextRound = () => {
   createFreshGoals();
   createFreshEnemiesVertical();
   createFreshEnemiesHorizontal();
+  
+  isGameLive = true;
+  showNextChallenge();
   playGame();
 };
 
@@ -128,8 +132,6 @@ const generateMathChallenge = () => {
   
   const num00 = getRandomNumber(minMathChallenge, maxMathChallenge);
   const num01 = getRandomNumber(minMathChallenge, maxMathChallenge);
-  // const num00 = 1;
-  // const num01 = 1;
   const correct = num00 * num01;
   
   let modifier1, modifier2;
@@ -154,20 +156,23 @@ const num01DOM = document.getElementById('num-01');
 const answersTextDOM = Array.from(document.getElementsByClassName('answer-text'));
 const answersImageDOM = Array.from(document.getElementsByClassName('answer-image'));
 
-const getGoalLinks = () => shuffleArray([
-  'public/images/goal-00.png',
-  'public/images/goal-01.png',
-  'public/images/goal-02.png'
-]);
+let correctAnswerIndex;
 
-const showChallenge = () => {
+const showNextChallenge = () => {
   const { num00, num01, correct, answers } = generateMathChallenge();
-  const goalLinks = getGoalLinks();
+  const shuffledAnswers = shuffleArray(answers);
+  correctAnswerIndex = shuffledAnswers.findIndex(answer => answer === correct);
+  console.log('correctAnswerIndex', correctAnswerIndex);
+  const goalLinks = shuffleArray([
+    'public/images/goal-00.png',
+    'public/images/goal-01.png',
+    'public/images/goal-02.png'
+  ]);
   
   num00DOM.textContent = num00;
   num01DOM.textContent = num01;
-  answersTextDOM.forEach((option, index) => {
-    option.textContent = answers[index];
+  shuffledAnswers.forEach((answer, index) => {
+    answersTextDOM[index].textContent = shuffledAnswers[index];
     answersImageDOM[index].src = goalLinks[index];
   });
 };
@@ -227,6 +232,8 @@ const createFreshGoals = () => {
   
   const distBetweenGoals = canvasPlayableHeight/2 / (totalGoals+1);
   
+  const shuffledGoalImages = shuffleArray([sprites.goal00, sprites.goal01, sprites.goal02]);
+  
   for (let i = 0; i < totalGoals; i++) {
     let goal = {
       x: x,
@@ -234,7 +241,7 @@ const createFreshGoals = () => {
       w: goalSize,
       h: goalSize,
       speedY: goalSpeed * (Math.random() >= 0.5 ? 1 : -1),
-      image: sprites[`goal0${i}`]
+      image: shuffledGoalImages[i]
     };
     goals[i] = goal;
   }
@@ -403,11 +410,11 @@ const updateEnemy = (enemy) => {
 
 
 // detect collision between player and goal
-const checkCollision = (player, rect) => {
-  const isCollision = player.x + player.w >= rect.x &&
-                      rect.x + rect.w >= player.x &&
-                      player.y + player.h >= rect.y &&
-                      rect.y + rect.h >= player.y;
+const checkCollisionGoal = (player, rect) => {
+  const isCollision = player.x + player.w >= rect.x + 1.5 &&
+                      rect.x + rect.w >= player.x + 1.5 &&
+                      player.y + player.h >= rect.y + 1.5 &&
+                      rect.y + rect.h >= player.y + 1.5 ;
   return isCollision;
 };
 
@@ -576,7 +583,7 @@ const cancelAnimation = () => {
   requestId = undefined;
 };
 
-const finishAfterCollision = (successfulEnemy) => {
+const finishAfterCollisionEnemy = (successfulEnemy) => {
   console.log('You lost');
   isGameLive = false;
   startButton.textContent = 'Restart';
@@ -585,8 +592,30 @@ const finishAfterCollision = (successfulEnemy) => {
   player.image = sprites.playerUnhappy;
   drawPlayer();
   
-  drawEnemy(successfulEnemy);  
+  drawEnemy(successfulEnemy);
 };
+
+const finishAfterCollisionGoal = (goal, result) => {
+  isGameLive = false;
+  
+  cancelAnimation();
+  
+  if (result === 'correct') {
+    console.log('correct');
+    setTimeout(() => {
+      nextRound();
+    }, 2000);
+  } else {
+    startButton.textContent = 'Restart';
+    player.image = sprites.playerUnhappy;
+  }
+
+  drawPlayer();
+  
+  drawGoal(goal);
+};
+
+
 
 const playGame = () => {  
   drawBackground();
@@ -596,8 +625,12 @@ const playGame = () => {
   for (let i = 0; i < totalGoals; i++) {
     drawGoal(goals[i]);
     
-    if (checkCollision(player, goals[i])) {
-      return nextRound();
+    if (checkCollisionGoal(player, goals[i])) {
+      if (answersImageDOM[correctAnswerIndex].src === goals[i].image.src) {
+        return finishAfterCollisionGoal(goals[i], 'correct');
+      } else {
+        return finishAfterCollisionGoal(goals[i], 'wrong');
+      }
     }
     
     updateGoal(goals[i]);
@@ -621,7 +654,7 @@ const playGame = () => {
           drawEnemy(enemiesVertical[j]);
         }
         
-        return finishAfterCollision(enemiesVertical[i]);
+        return finishAfterCollisionEnemy(enemiesVertical[i]);
       }
       
       if (checkCollisionEnemy(player, enemiesHorizontal[i])) {
@@ -635,7 +668,7 @@ const playGame = () => {
           drawEnemy(enemiesHorizontal[j]);
         }
         
-        return finishAfterCollision(enemiesHorizontal[i]);
+        return finishAfterCollisionEnemy(enemiesHorizontal[i]);
       } 
     }
     updateEnemy(enemiesVertical[i]);
@@ -650,6 +683,7 @@ let isGamePaused = false;
 
 
 const startGame = () => {
+  console.clear();
   isGameLive = !isGameLive;
   
   createFreshPlayer();
@@ -659,7 +693,7 @@ const startGame = () => {
   
   if (isGameLive) {
     startButton.textContent = 'Stop';
-    showChallenge();
+    showNextChallenge();
     playGame();
   } else {
     startButton.textContent = 'Start';
