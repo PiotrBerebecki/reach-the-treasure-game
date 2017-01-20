@@ -25,7 +25,7 @@ const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 
 
 // define game variables
-let round = 11;
+let round = 1;
 let totalEnemies = round;
 let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;

@@ -35,9 +35,11 @@ body {
 
 @media screen and (min-width: 601px) {
   .app {
-    width: 400px;
+    max-width: 400px;
   }
 }
+
+
 
 #display {
   position: relative;
@@ -51,7 +53,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   display: none;
-  width: 80%;
+  width: 85%;
   padding: 0.5rem;
   border-radius: 3px;
   background: rgba(255,255,255,0.4);
@@ -133,7 +135,8 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 0.5rem;
-  width: 100%;
+  max-width: 100%;
+  width: 400px;
 }
 
 
