@@ -188,6 +188,7 @@ const num00DOM = document.getElementById('num-00');
 const num01DOM = document.getElementById('num-01');
 const answersTextDOM = Array.from(document.getElementsByClassName('answer-text'));
 const answersImageDOM = Array.from(document.getElementsByClassName('answer-image'));
+const answersDOM = Array.from(document.getElementsByClassName('answer-group'));
 
 let correctAnswerIndex;
 
@@ -207,6 +208,10 @@ const showNextChallenge = () => {
   shuffledAnswers.forEach((answer, index) => {
     answersTextDOM[index].textContent = shuffledAnswers[index];
     answersImageDOM[index].src = goalLinks[index];
+  });
+  
+  answersDOM.forEach((answer, index) => {
+    answer.classList.remove('wrong-answer');
   });
 };
 
@@ -627,7 +632,7 @@ const cancelAnimation = () => {
 const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   console.log('You lost');
   isGameLive = false;
-  startButton.textContent = 'Stop this round';
+  startButton.textContent = 'Try this round again';
   cancelAnimation();
   drawBackground();
   
@@ -653,10 +658,17 @@ const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   drawAllGoals();
 };
 
+
 const finishAfterCollisionGoal = (goal, result) => {
   isGameLive = false;
   cancelAnimation();
   drawBackground();
+  
+  answersDOM.forEach((answer, index) => {
+    if (index !== correctAnswerIndex) {
+      answer.classList.add('wrong-answer');
+    }
+  });
   
   if (result === 'correct') {
     console.log('Correct');
@@ -667,7 +679,7 @@ const finishAfterCollisionGoal = (goal, result) => {
     }, 2000);
   } else {
     console.log('Wrong');
-    startButton.textContent = 'Stop this round';
+    startButton.textContent = 'Try this round again';
     player.image = sprites.playerUnhappy;
   }
 

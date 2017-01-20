@@ -74,6 +74,10 @@ body {
   align-items: center;
 }
 
+.wrong-answer {
+  opacity: 0.2;
+}
+
 #question {
   text-align: center;
 }
