@@ -82,6 +82,15 @@ body {
   display: inline-block;
   width: 1.5rem;
   font-weight: bold;
+  /*border: solid 1px black;*/
+}
+
+#num-00 {
+  text-align: right;
+}
+
+#num-01 {
+  text-align: left;
 }
 
 #operator {

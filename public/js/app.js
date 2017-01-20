@@ -31,7 +31,7 @@ let minEnemySpeed = 1;
 let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
-const playerSpeed = 1;
+const playerSpeed = 2;
 
 const minMathChallenge = 1;
 const maxMathChallenge = 12;
@@ -134,20 +134,50 @@ const shuffleArray = (array) => {
 const generateMathChallenge = () => {
   
   const num00 = getRandomNumber(minMathChallenge, maxMathChallenge);
+  // const num00 = 11;
   const num01 = getRandomNumber(minMathChallenge, maxMathChallenge);
+  // const num01 = 10;
   const correct = num00 * num01;
   
-  let modifier1, modifier2;
+  let shiftModifier1, shiftModifier2;
+  let multiModifier1 = 1;
+  let multiModifier2 = 1;
   
+  // if >= 5
   if (correct >= 5) {
-    modifier1 = Math.random() > 0.5 ? 2 : -2;
-    modifier2 = Math.random() > 0.5 ? 4 : -4;
+    shiftModifier1 = Math.random() > 0.5 ? -2 : 2;
+    shiftModifier2 = Math.random() > 0.5 ? -4 : 4;
+  // if < 5
   } else {
-    modifier1 = 1;
-    modifier2 = 2;
+    shiftModifier1 = 1;
+    shiftModifier2 = 2;
   }
   
-  const answers = [correct, correct + modifier1, correct + modifier2];
+  // if one num is 1
+  if (num00 === 1 || num01 === 1) {
+    multiModifier2 = 2;
+    shiftModifier2 = 0;
+  // if 5
+    if (correct === 5) {
+      shiftModifier1 = 10;
+    }
+  }
+  
+  // if number 20, 30, 40 ... 120
+  if (correct % 10 === 0 && correct >= 20) {
+    shiftModifier1 = Math.random() > 0.5 ? -10 : 10;
+    shiftModifier2 = Math.random() > 0.5 ? 5 : correct / 10;
+  // if 15, 25, 45, 55
+  } else if (correct % 5 === 0 && correct >= 15) {
+    shiftModifier1 = Math.random() > 0.5 ? -10 : 10;
+    shiftModifier2 = Math.random() > 0.5 ? -5 : 5;
+  }
+  
+  const answers = [
+    correct,
+    correct * multiModifier1 + shiftModifier1,
+    correct * multiModifier2 + shiftModifier2
+  ];
   
   return { num00, num01, correct, answers };
 };
@@ -597,7 +627,7 @@ const cancelAnimation = () => {
 const finishAfterCollisionEnemy = (successfulEnemy, indexOfSuccessfulEnemy) => {
   console.log('You lost');
   isGameLive = false;
-  startButton.textContent = 'Restart this round';
+  startButton.textContent = 'Stop this round';
   cancelAnimation();
   drawBackground();
   
@@ -637,7 +667,7 @@ const finishAfterCollisionGoal = (goal, result) => {
     }, 2000);
   } else {
     console.log('Wrong');
-    startButton.textContent = 'Restart this round';
+    startButton.textContent = 'Stop this round';
     player.image = sprites.playerUnhappy;
   }
 
@@ -706,7 +736,7 @@ const startGame = () => {
   createFreshEnemiesHorizontal();
   
   if (isGameLive) {
-    startButton.textContent = 'Restart this round';
+    startButton.textContent = 'Stop this round';
     showNextChallenge();
     playGame();
   } else {
