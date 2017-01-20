@@ -51,7 +51,7 @@ body {
   left: 50%;
   transform: translateX(-50%);
   display: none;
-  width: 60%;
+  width: 80%;
   padding: 0.5rem;
   border-radius: 3px;
   background: rgba(255,255,255,0.4);
@@ -63,12 +63,13 @@ body {
 @media screen and (min-width: 601px) {
   #display__challenge {
     top: 3%;
-    width: 55%;
+    width: 75%;
   }
 }
 
 .answer-group {
   position: relative;
+  margin-left: 3.5rem;
   margin-top: 0.5rem;
   display: flex;
   align-items: center;
@@ -82,9 +83,16 @@ body {
   text-align: center;
 }
 
-#num-00, #num-01 {
+#round {
   display: inline-block;
   width: 1.5rem;
+  margin-right: 0.5rem;
+  margin-left: 0.1rem;
+}
+
+#num-00, #num-01 {
+  display: inline-block;
+  width: 1.2rem;
   font-weight: bold;
   /*border: solid 1px black;*/
 }

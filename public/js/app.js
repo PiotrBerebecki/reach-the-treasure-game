@@ -25,10 +25,10 @@ const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 
 
 // define game variables
-let round = 1;
+let round = 11;
 let totalEnemies = round;
-let minEnemySpeed = 0.001;
-let maxEnemySpeed = minEnemySpeed + 0.001;
+let minEnemySpeed = 1;
+let maxEnemySpeed = minEnemySpeed + 1;
 const totalGoals = 3;
 let goalSpeed = 0.5;
 const playerSpeed = 2;
@@ -36,10 +36,12 @@ const playerSpeed = 2;
 const minMathChallenge = 1;
 const maxMathChallenge = 12;
 
-const displayRound = (round) => {
-  console.log('Round', round);
-};
 
+const roundDOM = document.getElementById('round');
+
+const displayRound = (round) => {
+  roundDOM.textContent = `${round}:`;
+};
 
 const nextRound = () => {
   // temporarily prevent player from moving
