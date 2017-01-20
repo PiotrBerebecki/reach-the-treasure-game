@@ -130,11 +130,9 @@ body {
 
 
 .button {
-  width: 48%;
+  width: 49%;
   padding-top: 0.6rem;
   padding-bottom: 0.6rem;
-  padding-left: 0.8rem;
-  padding-right: 0.8rem;
   background: rgba(255, 255, 255, 0.2);
   border-radius: 2px;
   font-size: 0.85rem;
