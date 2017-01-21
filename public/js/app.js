@@ -19,7 +19,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-const canvasBottomLimit = Math.round(canvasHeight * 0.313);
+const canvasBottomLimit = Math.round(canvasHeight * 0.2215);
 const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 
 
