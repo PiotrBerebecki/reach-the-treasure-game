@@ -40,7 +40,6 @@ body {
 }
 
 
-
 #display {
   position: relative;
   width: 100%;
@@ -113,13 +112,6 @@ body {
   margin-right: 0.5rem;
   height: 1rem;
   width: auto;
-}
-
-.answer-text {
-  /*position: absolute;*/
-  /*left: 2rem;*/
-  /*top: 50%;*/
-  /*transform: translateY(-42%);*/
 }
 
 .wrong-answer {

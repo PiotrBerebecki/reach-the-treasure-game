@@ -4,6 +4,7 @@ console.clear();
 // invoked at the bottom
 const gameInit = () => {
   loadSprites();
+  createFreshBackground();
   setPawnSize(20);
   getPlayerInitialYPosition();
   // to avoid undefined player on 
@@ -19,7 +20,7 @@ const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
-const canvasBottomLimit = Math.round(canvasHeight * 0.2215);
+const canvasBottomLimit = Math.round(canvasHeight * 0.2026);
 const canvasPlayableHeight = canvasHeight - canvasBottomLimit;
 
 
@@ -64,6 +65,7 @@ const nextRound = () => {
   goalSpeed *= 0.98;
   
   cancelAnimation();
+  createFreshBackground();
   createFreshPlayer();
   createFreshGoals();
   createFreshEnemiesVertical();
@@ -116,11 +118,14 @@ const loadSprites = () => {
     sprites[`goal0${i}`].src = `./public/images/goal-0${i}.png`;
   }
   
-  sprites.background = new Image();
-  sprites.background.onload = () => drawBackground();
-  sprites.background.src = './public/images/background.jpg';
+  for (let i = 0; i < 3; i++) {
+    sprites[`background0${i}`] = new Image();
+    if (i === 0) {
+      sprites[`background0${i}`].onload = () => drawBackground();
+    }
+    sprites[`background0${i}`].src = `./public/images/background-0${i}.jpg`;
+  }
 };
-
 
 
 // helpers
@@ -232,6 +237,17 @@ const toggleChallenge = () => {
   challengeDOM.style.display = isGameLive ? 'flex' : 'none';
 };
 
+
+
+// define background
+let background;
+
+const createFreshBackground = () => {
+  const backgroundNumber = (round - 1) % 3;
+  background = {
+    image: sprites[`background0${backgroundNumber}`]
+  };
+};
 
 
 // define player
@@ -369,7 +385,7 @@ const createFreshEnemiesHorizontal = () => {
 
 // background draw
 const drawBackground = () => {
-  ctx.drawImage(sprites.background, 0, 0, canvasWidth, canvasHeight);
+  ctx.drawImage(background.image, 0, 0, canvasWidth, canvasHeight);
 };
 
 
