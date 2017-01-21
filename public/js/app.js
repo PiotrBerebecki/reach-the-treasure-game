@@ -15,7 +15,7 @@ const gameInit = () => {
 
 
 // define canvas
-const canvas = document.getElementById('display__canvas');
+const canvas = document.getElementById('canvas');
 const ctx = canvas.getContext('2d');
 const canvasWidth = canvas.width;
 const canvasHeight = canvas.height;
@@ -226,10 +226,10 @@ const showNextChallenge = () => {
 
 
 // toggle challenge on / off
-const challengeDOM = document.getElementById('display__challenge');
+const challengeDOM = document.getElementById('challenge');
 
 const toggleChallenge = () => {
-  challengeDOM.style.display = isGameLive ? 'block' : 'none';
+  challengeDOM.style.display = isGameLive ? 'flex' : 'none';
 };
 
 
@@ -764,6 +764,7 @@ const startGame = () => {
     playGame();
   } else {
     startButton.textContent = 'Continue the treasure hunt';
+    pauseButton.textContent = 'Pause';
     isGamePaused = false;
     cancelAnimation();
     drawBackground();

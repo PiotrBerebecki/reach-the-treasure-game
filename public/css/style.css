@@ -24,7 +24,7 @@ body {
   }
 }
 
-.app {
+#app {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -34,7 +34,7 @@ body {
 }
 
 @media screen and (min-width: 601px) {
-  .app {
+  #app {
     max-width: 400px;
   }
 }
@@ -43,18 +43,21 @@ body {
 
 #display {
   position: relative;
+  width: 100%;
   box-shadow: 0 30px 80px 0 rgba(0,0,0,0.1),
               0 20px 60px 0 rgba(0,0,0,0.1);
 }
 
-#display__challenge {
+#challenge {
   position: absolute;
-  top: 2%;
+  top: 1%;
   left: 50%;
   transform: translateX(-50%);
-  display: none;
+  display: none; /* replaced with flex in js */
+  flex-direction: column;
+  align-items: center;  
   width: 85%;
-  padding: 0.5rem;
+  padding: 0.3rem;
   border-radius: 3px;
   background: rgba(255,255,255,0.4);
   color: rgba(0,0,0,0.8);
@@ -63,22 +66,10 @@ body {
 }
 
 @media screen and (min-width: 601px) {
-  #display__challenge {
-    top: 3%;
+  #challenge {
+    top: 2%;
     width: 75%;
   }
-}
-
-.answer-group {
-  position: relative;
-  margin-left: 3.5rem;
-  margin-top: 0.5rem;
-  display: flex;
-  align-items: center;
-}
-
-.wrong-answer {
-  opacity: 0.2;
 }
 
 #question {
@@ -96,7 +87,6 @@ body {
   display: inline-block;
   width: 1.2rem;
   font-weight: bold;
-  /*border: solid 1px black;*/
 }
 
 #num-00 {
@@ -113,20 +103,30 @@ body {
   font-weight: bold;
 }
 
+.answer-group {
+  margin-top: 0.3rem;
+  display: flex;
+  width: 25%;
+}
+
 .answer-image {
-  margin-left: 0.5rem;
+  margin-right: 0.5rem;
   height: 1rem;
   width: auto;
 }
 
 .answer-text {
-  position: absolute;
-  left: 2rem;
-  top: 50%;
-  transform: translateY(-42%);
+  /*position: absolute;*/
+  /*left: 2rem;*/
+  /*top: 50%;*/
+  /*transform: translateY(-42%);*/
 }
 
-#display__canvas {
+.wrong-answer {
+  opacity: 0.2;
+}
+
+#canvas {
   display: block;
   width: 100%;
 }
@@ -135,10 +135,16 @@ body {
   display: flex;
   justify-content: space-between;
   margin-top: 0.5rem;
-  max-width: 100%;
-  width: 400px;
+  width: 100%;
 }
 
+@media screen and (max-width: 600px) {
+  #controls {
+    order: -3;
+    margin-top: 0.2rem;
+    margin-bottom: 0.2rem;
+  }
+}
 
 .button {
   width: 49%;
