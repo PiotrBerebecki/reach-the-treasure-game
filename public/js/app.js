@@ -128,7 +128,7 @@ const loadSprites = () => {
 };
 
 
-// helpers
+// helper functions
 const getRandomNumber = (min, max) => {
   return Math.floor(Math.random() * (max + 1 - min) + min);
 };
