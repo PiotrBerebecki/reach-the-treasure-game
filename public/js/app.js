@@ -86,7 +86,7 @@ const controller = {
       view.updateGoal(goals[i]);
     }
     
-    state.animationRequestId = window.requestAnimationFrame(this.playGame);
+    state.animationRequestId = window.requestAnimationFrame(this.playGame.bind(this));
     
     for (let i = 0; i < state.totalEnemies; i++) {
       view.drawEnemy(enemiesVertical[i]);
@@ -143,23 +143,23 @@ const controller = {
     if (successfulEnemy.type === 'vertical') {
       for (let j = 0; j < state.totalEnemies; j++) {
         if (j !== indexOfSuccessfulEnemy) {
-          drawEnemy(enemiesVertical[j]);
+          drawEnemy.call(view, enemiesVertical[j]);
         }
-        drawEnemy(enemiesHorizontal[j]);
+        drawEnemy.call(view, enemiesHorizontal[j]);
       }
     } else {
       for (let j = 0; j < state.totalEnemies; j++) {
         if (j !== indexOfSuccessfulEnemy) {
-          drawEnemy(enemiesHorizontal[j]);
+          drawEnemy.call(view, enemiesHorizontal[j]);
         }
-        drawEnemy(enemiesVertical[j]);
+        drawEnemy.call(view, enemiesVertical[j]);
       }
     }
 
     player.image = sprites.playerUnhappy;
-    drawPlayer();
-    drawEnemy(successfulEnemy);
-    drawAllGoals();
+    drawPlayer.call(view);
+    drawEnemy.call(view, successfulEnemy);
+    drawAllGoals.call(view);
   },
 
 
@@ -183,29 +183,30 @@ const controller = {
       }
     });
     
+    
     if (result === 'correct') {
       player.image = sprites.playerHappy;
-      startButton.removeEventListener('click', this.startGame);
+            
       setTimeout(() => {
-        startButton.addEventListener('click', this.startGame);
         this.nextRound();
-      }, 2000);
+      }, 1400);
+      
     } else {
       startButton.textContent = 'Try this round again';
       player.image = sprites.playerUnhappy;
     }
 
-    drawPlayer();
-    drawAllGoals();
+    drawPlayer.call(view);
+    drawAllGoals.call(view);
     
     enemiesVertical.forEach((enemy, index) => {
-      drawEnemy(enemy);
-      drawEnemy(enemiesHorizontal[index]);
+      drawEnemy.call(view, enemy);
+      drawEnemy.call(view, enemiesHorizontal[index]);
     });
   },
 
   
-  nextRound: function () {
+  nextRound: function () {    
     // temporarily prevent player from moving
     // after reaching the goal
     window.removeEventListener('keydown', this.movePlayer);
@@ -226,14 +227,14 @@ const controller = {
     state.goalSpeed *= 0.98;
     
     this.cancelAnimation();
-    this.createFreshBackground();
-    this.createFreshPlayer();
-    this.createFreshGoals();
-    this.createFreshEnemiesVertical();
-    this.createFreshEnemiesHorizontal();
+    view.background = this.createFreshBackground();
+    view.player = this.createFreshPlayer();
+    view.goals = this.createFreshGoals();
+    view.enemiesVertical = this.createFreshEnemies('vertical');
+    view.enemiesHorizontal = this.createFreshEnemies('horizontal');
     
     state.isGameLive = true;
-    this.showNextChallenge();
+    view.showNextChallenge(this.generateMathChallenge());
     this.playGame();
   },
 
@@ -329,13 +330,13 @@ const controller = {
   createFreshPlayer: function() {
     const x = state.currentRound % 2 === 1 ? 
           view.minDistanceFromEdge :
-          view.canvasWidth - state.goalSize - view.minDistanceFromEdge;
+          view.canvasWidth - view.goalSize - view.minDistanceFromEdge;
       
     return {
       x: x,
       y: view.playerInitialYPosition,
-      w: state.playerSize,
-      h: state.playerSize,
+      w: view.playerSize,
+      h: view.playerSize,
       speed: state.playerSpeed,
       isMoving: false,
       doneFirstMove: false,
@@ -347,11 +348,12 @@ const controller = {
       isDownArrowDown: false,
       image: view.sprites.playerInvisible,
     };
+    
   },
 
   createFreshGoals: function() {  
     const x = state.currentRound % 2 === 1 ? 
-      view.canvasWidth - state.goalSize - view.minDistanceFromEdge :
+      view.canvasWidth - view.goalSize - view.minDistanceFromEdge :
       view.minDistanceFromEdge;
     
     const distBetweenGoals = view.canvasPlayableHeight/2 / (state.totalGoals+1);
@@ -775,8 +777,7 @@ const view = {
           break;
       }
     }
-  },
-  
+  }, 
 };
 
 
@@ -813,6 +814,7 @@ const helpers = {
     });
   }
 }());
+
 
 
 controller.init();
