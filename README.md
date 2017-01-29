@@ -1,12 +1,12 @@
 # Reach the Treasure Game
 
-Practice times tables while searching for treasure
-
 Live version: https://secure-bastion-76285.herokuapp.com
+
+<img src="./src/graphics/screencast.gif" width="275px" height="auto">
 
 ## Tech stack
 * Node
-* Vanilla JS
+* Vanilla JavaScript
 
 ## Getting started
 
