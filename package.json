@@ -1,0 +1,19 @@
+{
+  "name": "reach-the-treasure-game",
+  "version": "1.0.0",
+  "description": "Learn times tablses by finding the treasure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/PiotrBerebecki/reach-the-treasure-game.git"
+  },
+  "author": "Piotr Berebecki",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/PiotrBerebecki/reach-the-treasure-game/issues"
+  },
+  "homepage": "https://github.com/PiotrBerebecki/reach-the-treasure-game#readme"
+}
