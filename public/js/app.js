@@ -290,23 +290,23 @@ const controller = {
     const sprites = {};
     
     sprites.playerRegular = new Image();
-    sprites.playerRegular.src = './public/images/player-regular.png';
+    sprites.playerRegular.src = './../images/player-regular.png';
     
     sprites.playerInvisible = new Image();
-    sprites.playerInvisible.src = './public/images/player-invisible.png';
+    sprites.playerInvisible.src = './../images/player-invisible.png';
     
     sprites.playerHappy = new Image();
-    sprites.playerHappy.src = './public/images/player-happy.png';
+    sprites.playerHappy.src = './../images/player-happy.png';
     
     sprites.playerUnhappy = new Image();
-    sprites.playerUnhappy.src = './public/images/player-unhappy.png';
+    sprites.playerUnhappy.src = './../images/player-unhappy.png';
     
     sprites.enemy = new Image();
-    sprites.enemy.src = './public/images/enemy.png';
+    sprites.enemy.src = './../images/enemy.png';
     
     for (let i = 0; i < state.totalGoals; i++) {
       sprites[`goal0${i}`] = new Image();
-      sprites[`goal0${i}`].src = `./public/images/goal-0${i}.png`;
+      sprites[`goal0${i}`].src = `./../images/goal-0${i}.png`;
     }
     
     for (let i = 0; i < 3; i++) {
@@ -314,7 +314,7 @@ const controller = {
       if (i === 0) {
         sprites[`background0${i}`].onload = () => view.drawBackground();
       }
-      sprites[`background0${i}`].src = `./public/images/background-0${i}.jpg`;
+      sprites[`background0${i}`].src = `./../images/background-0${i}.jpg`;
     }
 
     return sprites;
@@ -721,9 +721,9 @@ const view = {
     const shuffledAnswers = helpers.shuffleArray(answers);
     state.correctAnswerIndex = shuffledAnswers.findIndex(answer => answer === correct);
     const goalLinks = helpers.shuffleArray([
-      'public/images/goal-00.png',
-      'public/images/goal-01.png',
-      'public/images/goal-02.png'
+      './../images/goal-00.png',
+      './../images/goal-01.png',
+      './../images/goal-02.png'
     ]);
     
     this.num00DOM.textContent = num00;

@@ -4,6 +4,8 @@
   "description": "Learn times tablses by finding the treasure",
   "main": "index.js",
   "scripts": {
+    "start": "node src/server.js",
+    "dev": "nodemon src/server.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -15,5 +17,11 @@
   "bugs": {
     "url": "https://github.com/PiotrBerebecki/reach-the-treasure-game/issues"
   },
-  "homepage": "https://github.com/PiotrBerebecki/reach-the-treasure-game#readme"
+  "homepage": "https://github.com/PiotrBerebecki/reach-the-treasure-game#readme",
+  "dependencies": {
+    "express": "^4.14.1"
+  },
+  "devDependencies": {
+    "nodemon": "^1.11.0"
+  }
 }
